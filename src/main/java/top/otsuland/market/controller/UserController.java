@@ -14,12 +14,12 @@ import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.service.UserService;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 
 @RestController
 @RequestMapping("/api/users")
@@ -74,10 +74,9 @@ public class UserController {
 
     /**
      * 修改基本信息
-     * ok
      */
-    @PutMapping("/{id}")
-    public Result<?> meta(@PathVariable Integer id, @RequestBody User user) {
+    @PutMapping
+    public Result<?> meta(@RequestAttribute("userId") Integer id, @RequestBody User user) {
         int code = userService.meta(id, user);
         switch(code) {
             case -1: return Result.set(code, "用户不存在！");
@@ -90,8 +89,8 @@ public class UserController {
      * 修改个人简介
      * ok
      */
-    @PutMapping("/prof/{id}")
-    public Result<?> prof(@PathVariable Integer id, @RequestBody UserProfile userProfile) {
+    @PutMapping("/prof")
+    public Result<?> prof(@RequestAttribute("userId") Integer id, @RequestBody UserProfile userProfile) {
         int code = userService.prof(id, userProfile);
         switch(code) {
             case -1: return Result.set(code, "用户不存在！");
@@ -104,8 +103,8 @@ public class UserController {
      * 上传头像
      * ok
      */
-    @PostMapping("/icon/{id}")
-    public Result<?> icon(@PathVariable Integer id, @RequestParam MultipartFile pic) {
+    @PostMapping("/icon/")
+    public Result<?> icon(@RequestAttribute("userId") Integer id, @RequestParam MultipartFile pic) {
         try {
             int code = userService.icon(id, pic);
             switch (code) {
@@ -121,8 +120,8 @@ public class UserController {
         /**
      * 获取个人简介
      */
-    @GetMapping("/prof/{id}")
-    public String getMethodName(@PathVariable Integer id) {
+    @GetMapping("/prof")
+    public String getMethodName(@RequestAttribute("userId") Integer id) {
         return new String();
     }
 

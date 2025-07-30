@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("product_second_images")
-public class ProductSecondImages {
+@TableName("product_pic")
+public class ProductPic {
 
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -18,10 +18,8 @@ public class ProductSecondImages {
     private Integer productId;
 
     @TableField
-    private byte[] secondImage;
+    private Integer kind; // 1 主图 2 副图
 
-    public ProductSecondImages(Integer productId, byte[] secondImage) {
-        this.productId = productId;
-        this.secondImage = secondImage;
-    }
+    @TableField
+    private byte[] picture;
 }

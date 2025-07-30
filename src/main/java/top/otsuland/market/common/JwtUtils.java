@@ -62,12 +62,13 @@ public class JwtUtils {
      * 解析令牌
      * ok
      */
-    public static boolean validateJWT(String token) {
-        Jwts.parser()
+    public static Integer validateJWT(String token) {
+        Claims claim = Jwts.parser()
             .verifyWith(KEY)
             .build()
             .parse(token).accept(Jws.CLAIMS) // 解析 JWS
             .getPayload(); // JWT 有效载荷
-        return true;
+        Integer id = claim.get("id", Integer.class);
+        return id;
     }
 }

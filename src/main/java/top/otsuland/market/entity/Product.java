@@ -24,14 +24,15 @@ public class Product {
     private Integer amount;
 
     @TableField
+    private String prof;
+
+    @TableField
     private Integer sellerId;
 
+    // 有权限的属性
     @TableField
-    private String sellerUsername;
+    private Integer state; // 默认为 0 销售中 1 已售罄 2 已下架 3 已删除
 
     @TableField
-    private byte[] mainImage;
-
-    @TableField
-    private byte[] mainImageNarrow;
+    private Integer want; // 默认为 0，显示几人想要。
 }

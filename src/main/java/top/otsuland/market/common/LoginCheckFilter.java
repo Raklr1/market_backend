@@ -37,9 +37,9 @@ public class LoginCheckFilter implements Filter{
         String url = req.getRequestURL().toString();
         log.info("请求的 URL: {}", url);
 
-        // 判断是否是 login 请求
-        if(url.contains("login")) {
-            log.info("login, ok!");
+        // 判断是否是登录或注册请求
+        if(url.contains("login") || url.contains("register")) {
+            log.info("login or register, ok!");
 			chain.doFilter(request, response);
             return;
         }
@@ -55,7 +55,11 @@ public class LoginCheckFilter implements Filter{
 
         // 解析 token
         try {
-            JwtUtils.validateJWT(jwt);
+            Integer userId = JwtUtils.validateJWT(jwt);
+            log.info("令牌合法，放行！");
+            // 将用户 id 存入 request attribute
+            req.setAttribute("userId", userId);
+            chain.doFilter(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             log.info("解析令牌失败，返回未登录错误信息");
@@ -63,11 +67,5 @@ public class LoginCheckFilter implements Filter{
             resp.getWriter().write(notLogin);
             return;
         }
-
-        // 放行
-        log.info("令牌合法，放行");
-        chain.doFilter(request, response);
-        
     }
-
 }

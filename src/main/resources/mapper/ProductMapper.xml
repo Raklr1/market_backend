@@ -3,4 +3,40 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.otsuland.market.mapper.ProductMapper">
 
+    <!-- selectByUidAndPid --> 
+
+    <select id="selectByUidAndPid">
+        select * from product where user_id = #{uid} and id = #{pid};
+    </select>
+
+    <!-- selectByUserId --> 
+
+    <select id="selectByUserId">
+        select * from product where seller_id = #{uid};
+    </select>
+
+    <!-- updateNameById --> 
+
+    <update id="updateNameById">
+        update product set name = #{name} where id = #{id};
+    </update>
+
+    <!-- updatePriceById --> 
+
+    <update id="updatePriceById">
+        update product set price = #{price} where id = #{id};
+    </update>
+
+    <!-- updateAmountById --> 
+
+    <update id="updateAmountById">
+        update product set amount = #{amount} where id = #{id};
+    </update>
+
+
+    <!-- updateProfById --> 
+
+    <update id="updateProfById">
+        update product set prof = #{prof} where id = #{id};
+    </update>
 </mapper>
