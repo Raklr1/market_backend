@@ -12,7 +12,7 @@ import lombok.Data;
 public class User {
 
     @TableId(type = IdType.AUTO)
-    private int id;
+    private Integer id;
 
     @TableField
     private String username;

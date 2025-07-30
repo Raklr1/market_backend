@@ -18,6 +18,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 拦截器
+ * ok
+ */
 @Slf4j
 @Component
 @WebFilter(urlPatterns = "/**")
@@ -35,7 +39,7 @@ public class LoginCheckFilter implements Filter{
 
         // 判断是否是 login 请求
         if(url.contains("login")) {
-            log.info("登录操作，放行");
+            log.info("login, ok!");
 			chain.doFilter(request, response);
             return;
         }
@@ -43,8 +47,8 @@ public class LoginCheckFilter implements Filter{
         // 判断令牌是否存在
         String jwt = req.getHeader("token");
         if(!StringUtils.hasLength(jwt)) {
-            log.info("请求头 token 为空，返回未登录的信息");
-			String notLogin = JSON.toJSONString(new Result<>(0, "NOT_LOGIN"));
+            log.info("not login, fail!");
+			String notLogin = JSON.toJSONString(Result.set(0, "认证未认证！"));
             resp.getWriter().write(notLogin);
             return;
         }

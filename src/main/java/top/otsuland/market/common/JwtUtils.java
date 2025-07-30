@@ -12,6 +12,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import top.otsuland.market.entity.User;
 
+/**
+ * 令牌工具类
+ */
 public class JwtUtils {
 
     private static final Long EXPIRE = 60000 * 60 * 24 * 7L;
@@ -21,10 +24,13 @@ public class JwtUtils {
                 .build();
     private static final String SUBJECT = "AliceInWonderland";
 
+    /**
+     * 生成令牌
+     * ok
+     */
     public static String geneJWT(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
-        claims.put("tel", user.getTel());
+        claims.put("id", user.getId());
         String token = Jwts.builder().claims()
                 .add(claims)      // 添加内容
                 .subject(SUBJECT) // 声明主题
@@ -36,6 +42,9 @@ public class JwtUtils {
         return token;
     }
 
+    /**
+     * 解析令牌？
+     */
     public static Claims checkJWT(String token) {
         try {
             final Claims claims = Jwts.parser()
@@ -49,6 +58,10 @@ public class JwtUtils {
         }
     }
 
+    /**
+     * 解析令牌
+     * ok
+     */
     public static boolean validateJWT(String token) {
         Jwts.parser()
             .verifyWith(KEY)

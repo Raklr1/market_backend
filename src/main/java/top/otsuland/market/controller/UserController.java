@@ -1,7 +1,7 @@
 package top.otsuland.market.controller;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +11,10 @@ import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserProfile;
-import top.otsuland.market.service.FileService;
 import top.otsuland.market.service.UserService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,89 +28,112 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private FileService fileService;
-
     /**
      * 测试 - 获取用户列表
-     * @return
      */
-    @GetMapping()
-    public Result<List<User>> getUsers() {
-
+    @GetMapping
+    public Result<?> list() {
         List<User> users = userService.getUsersList();
-        return new Result<>(users);
+        return Result.success(users);
     }
 
     /**
-     * 用户登录
+     * 注册
+     * ok
+     */
+    @PostMapping("/register")
+    public Result<?> register(@RequestBody User user) {
+        int code = userService.register(user);
+        switch(code) {
+            case 1: return Result.set(code, "注册成功！");
+            case -3: return Result.set(code, "缺少信息！");
+            case -1: return Result.set(code, "用户名已经被使用！");
+            case -2: return Result.set(code, "该电话号码已经被注册！");
+            default: return Result.fail();
+        }
+    }
+    
+    /**
+     * 登录
+     * ok
      */
     @PostMapping("/login")
-    public Result<String> login(@RequestBody User user) {
-        
-        String jwt = JwtUtils.geneJWT(user);
-        return Result.success(jwt);
+    public Result<?> login(@RequestBody User user) {
+        int code = userService.login(user);
+        switch(code) {
+            case 1: 
+                String token = JwtUtils.geneJWT(userService.withId(user));
+                return Result.set(code, "登录成功！", token);
+            case -1: return Result.set(code, "密码为空！");
+            case -2: return Result.set(code, "缺失信息！");
+            case -3: return Result.set(code, "用户不存在！");
+            case -4: return Result.set(code, "密码不正确！");
+            default: return Result.fail();
+        }
     }
 
     /**
      * 修改基本信息
+     * ok
      */
-    @PutMapping("/1")
-    public Result<?> edit(@RequestBody User user) {
-        boolean success = userService.edit(user);
-        if(success) {
-            return Result.success(user);
-        } else {
-            return Result.fail();
+    @PutMapping("/{id}")
+    public Result<?> meta(@PathVariable Integer id, @RequestBody User user) {
+        int code = userService.meta(id, user);
+        switch(code) {
+            case -1: return Result.set(code, "用户不存在！");
+            case 1: return Result.set(code, "修改成功！");
+            default: return Result.fail();
         }
     }
 
     /**
      * 修改个人简介
+     * ok
      */
-    @PutMapping("/prof")
-    public Result<?> editProf(@RequestBody UserProfile userProfile) {
-        boolean success = userService.editProf(userProfile);
-        if(success) {
-            return Result.success(userProfile);
-        } else {
-            return Result.fail();
+    @PutMapping("/prof/{id}")
+    public Result<?> prof(@PathVariable Integer id, @RequestBody UserProfile userProfile) {
+        int code = userService.prof(id, userProfile);
+        switch(code) {
+            case -1: return Result.set(code, "用户不存在！");
+            case 1: return Result.set(code, "修改成功！");
+            default: return Result.fail();
         }
     }
 
     /**
-     * 上传个人头像
-     * @param userId
-     * @param name
-     * @param picture
-     * @return
+     * 上传头像
+     * ok
      */
-    @PostMapping("/icon")
-    public Result<?> saveIcon(
-        @RequestParam(name = "user_id") int userId,
-        @RequestParam(required = false) String name,
-        @RequestParam(required = true) MultipartFile picture) {
-        System.out.println("userId: " + userId);
-        System.out.println("name: " + name);
-        System.out.println("file name: " + picture.getOriginalFilename());
+    @PostMapping("/icon/{id}")
+    public Result<?> icon(@PathVariable Integer id, @RequestParam MultipartFile pic) {
         try {
-            fileService.saveIcon(userId, name, picture);
-            // 返回文件的元数据
-            Map<String, Object> fileInfo = Map.of(
-                "name", picture.getOriginalFilename(),
-                "size", picture.getSize(),
-                "contenType", picture.getContentType()
-            );
-            return Result.success(fileInfo);
-        } catch (Exception e) {
-            return Result.error("fail");
+            int code = userService.icon(id, pic);
+            switch (code) {
+                case 1: return Result.set(code, "上传成功！");
+                case -1: return Result.set(code, "用户不存在！");
+                default: return Result.fail();
+            }
+        } catch (IOException e) {
+            return Result.set(-2, "输入输出异常！");
         }
     }
 
-    @GetMapping("/icon/1")
-    public Result<?> loadIcon(@RequestParam int id) {
-
-        return Result.success(null);
+        /**
+     * 获取个人简介
+     */
+    @GetMapping("/prof/{id}")
+    public String getMethodName(@PathVariable Integer id) {
+        return new String();
     }
-    
+
+    /**
+     * 下载头像
+     */
+    // @GetMapping("/icon/{id}")
+    // public ResponseEntity<byte[]> loadIcon2(@PathVariable Integer id) {
+    //     byte[] image = fileService.getImageByUserId(id);
+    //     final HttpHeaders headers = new HttpHeaders();
+    //     headers.setContentType(MediaType.IMAGE_PNG);
+    //     return new ResponseEntity<>(image, headers, HttpStatus.OK);
+    // }
 }

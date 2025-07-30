@@ -2,6 +2,10 @@ package top.otsuland.market.common;
 
 import lombok.Data;
 
+/**
+ * 统一响应结果
+ * ok
+ */
 @Data
 public class Result<T> {
 
@@ -9,16 +13,22 @@ public class Result<T> {
     private String msg;
     private T data;
 
-    public Result(T data) {
+    private Result(T data) {
         this.code = 1;
         this.msg = "success";
         this.data = data;
     }
 
-    public Result(int code, String msg) {
+    private Result(int code, String msg) {
         this.code = code;
         this.msg = msg;
         this.data = null;
+    }
+
+    private Result(int code, String msg, T data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
     }
 
     /**
@@ -48,6 +58,14 @@ public class Result<T> {
      */
     public static <T> Result<T> success(T data) {
         return new Result<>(data);
+    }
+
+    public static <T> Result<T> set(int code, String msg) {
+        return new Result<>(code, msg);
+    }
+
+    public static <T> Result<T> set(int code, String msg, T data) {
+        return new Result<>(code, msg, data);
     }
 
 }

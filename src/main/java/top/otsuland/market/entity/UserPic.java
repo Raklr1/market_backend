@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("user_profile")
-public class UserProfile {
-    
+@TableName("user_pic")
+public class UserPic {
+
     @TableId(type = IdType.AUTO)
     private Integer id;
 
@@ -18,12 +18,9 @@ public class UserProfile {
     private Integer userId;
 
     @TableField
-    private String email;
+    private byte[] picture;
 
     @TableField
-    private String gender; // 男，女，未公开 TODO：根据数字转换成汉字
-
-    @TableField
-    private String prof;
+    private byte[] pictureNarrow;
 
 }

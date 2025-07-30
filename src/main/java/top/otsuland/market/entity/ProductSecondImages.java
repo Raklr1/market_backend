@@ -8,22 +8,20 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("pic_icon")
-public class PicIcon {
+@TableName("product_second_images")
+public class ProductSecondImages {
 
     @TableId(type = IdType.AUTO)
-    private int id;
+    private Integer id;
 
     @TableField
-    private int userId;
+    private Integer productId;
 
     @TableField
-    private String name;
+    private byte[] secondImage;
 
-    @TableField
-    private byte[] picture;
-
-    @TableField
-    private byte[] pictureNarrow;
-
+    public ProductSecondImages(Integer productId, byte[] secondImage) {
+        this.productId = productId;
+        this.secondImage = secondImage;
+    }
 }

@@ -8,22 +8,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("user_profile")
-public class UserProfile {
-    
+@TableName("product_category")
+public class ProductCategory {
+
     @TableId(type = IdType.AUTO)
     private Integer id;
 
     @TableField
-    private Integer userId;
+    private Integer productId;
 
     @TableField
-    private String email;
-
-    @TableField
-    private String gender; // 男，女，未公开 TODO：根据数字转换成汉字
-
-    @TableField
-    private String prof;
-
+    private String category;
 }

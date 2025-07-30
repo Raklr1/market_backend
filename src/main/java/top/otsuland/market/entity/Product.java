@@ -8,22 +8,30 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("user_profile")
-public class UserProfile {
-    
+@TableName("product")
+public class Product {
+
     @TableId(type = IdType.AUTO)
     private Integer id;
 
     @TableField
-    private Integer userId;
+    private String name;
 
     @TableField
-    private String email;
+    private String price; // TODO 学习 decimalformat
 
     @TableField
-    private String gender; // 男，女，未公开 TODO：根据数字转换成汉字
+    private Integer amount;
 
     @TableField
-    private String prof;
+    private Integer sellerId;
 
+    @TableField
+    private String sellerUsername;
+
+    @TableField
+    private byte[] mainImage;
+
+    @TableField
+    private byte[] mainImageNarrow;
 }
