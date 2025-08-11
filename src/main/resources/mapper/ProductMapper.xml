@@ -39,4 +39,15 @@
     <update id="updateProfById">
         update product set prof = #{prof} where id = #{id};
     </update>
+
+    <!-- selectByIds --> 
+
+    <select id="selectByIds">
+        select * from product
+        where id in
+        <foreach item="pid" collection="ids" open="(" separator="," close=")">
+            #{pid}
+        </foreach>
+    </select>
+    
 </mapper>

@@ -74,9 +74,10 @@ public class UserController {
 
     /**
      * 修改基本信息
+     * ok
      */
     @PutMapping
-    public Result<?> meta(@RequestAttribute("userId") Integer id, @RequestBody User user) {
+    public Result<?> meta(@RequestAttribute("id") Integer id, @RequestBody User user) {
         int code = userService.meta(id, user);
         switch(code) {
             case -1: return Result.set(code, "用户不存在！");
@@ -90,7 +91,7 @@ public class UserController {
      * ok
      */
     @PutMapping("/prof")
-    public Result<?> prof(@RequestAttribute("userId") Integer id, @RequestBody UserProfile userProfile) {
+    public Result<?> prof(@RequestAttribute("id") Integer id, @RequestBody UserProfile userProfile) {
         int code = userService.prof(id, userProfile);
         switch(code) {
             case -1: return Result.set(code, "用户不存在！");
@@ -104,7 +105,7 @@ public class UserController {
      * ok
      */
     @PostMapping("/icon/")
-    public Result<?> icon(@RequestAttribute("userId") Integer id, @RequestParam MultipartFile pic) {
+    public Result<?> icon(@RequestAttribute("id") Integer id, @RequestParam MultipartFile pic) {
         try {
             int code = userService.icon(id, pic);
             switch (code) {
@@ -117,12 +118,12 @@ public class UserController {
         }
     }
 
-        /**
+    /**
      * 获取个人简介
      */
     @GetMapping("/prof")
-    public String getMethodName(@RequestAttribute("userId") Integer id) {
-        return new String();
+    public Result<?> getProf(@RequestAttribute("id") Integer id) {
+        return Result.fail();
     }
 
     /**
@@ -135,4 +136,5 @@ public class UserController {
     //     headers.setContentType(MediaType.IMAGE_PNG);
     //     return new ResponseEntity<>(image, headers, HttpStatus.OK);
     // }
+
 }

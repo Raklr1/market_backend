@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import top.otsuland.market.entity.Product;
+import top.otsuland.market.entity.ProductPic;
 
 public interface ProductService {
 
@@ -17,4 +18,10 @@ public interface ProductService {
     int edit(Integer uid, Product product);
     int del(Integer uid, Integer pid);
     // int off(Integer pid);
+    int fav(Integer uid, Integer pid);
+    int favDel(Integer uid, Integer pid);
+    List<Product> favList(Integer uid);
+    byte[] getMainPic(Integer pid);
+    List<ProductPic> getSubPic(Integer pid);
+    List<Product> list(Integer uid, Integer page, Integer size, String[] category, Integer price, Integer time, String key);
 }

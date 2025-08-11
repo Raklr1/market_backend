@@ -34,6 +34,12 @@
     <!-- updatePicById --> 
 
     <update id="updatePicById">
-        update product_pic set pic = #{pic} where id = #{id};
+        update product_pic set picture = #{pic} where id = #{id};
     </update>
-    </select></mapper>
+
+    <!-- selectSubByPid --> 
+
+    <select id="selectSubByPid">
+        select * from product_pic where kind = 2 and product_id = #{pid};
+    </select>
+</mapper>

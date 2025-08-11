@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,10 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.service.ProductService;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,8 +36,8 @@ public class ProductController {
     /**
      * 用户-添加商品
      */
-    @PostMapping("/{uid}")
-    public Result<?> add(@PathVariable Integer uid, @RequestBody Product product) {
+    @PostMapping
+    public Result<?> add(@RequestAttribute("id") Integer uid, @RequestBody Product product) {
         int code = productService.add(uid, product);
         switch(code) {
             case 1: return Result.set(code, "上传成功！");
@@ -43,10 +49,11 @@ public class ProductController {
 
     /**
      * 用户-上传商品图
+     * ok
      */
-    @PostMapping("/pic/{kind}/{uid}/{pid}")
+    @PostMapping("/pic/{kind}/{pid}")
     public Result<?> pic(
-        @PathVariable Integer kind, @PathVariable Integer uid, 
+        @PathVariable Integer kind, @RequestAttribute("id") Integer uid, 
         @PathVariable Integer pid, MultipartFile pic) {
         try {
             int code = productService.pic(kind, uid, pid, pic);
@@ -54,19 +61,20 @@ public class ProductController {
                 case 1: return Result.set(code, "上传成功！");
                 case -1: return Result.set(code, "用户不存在！");
                 case -2: return Result.set(code, "无权限或商品不存在！");
+                case -3: return Result.set(code, "主图已经上传过！");
+                case -4: return Result.set(code, "副图已经超过 5 张！");
                 default: return Result.fail();
             }
         } catch (IOException e) {
-            return Result.set(-3, "输入输出异常！");
+            return Result.set(-5, "输入输出异常！");
         }
-
     }
 
     /**
      * 用户-修改商品图
      */
-    @PutMapping("/pic/{uid}/{picId}")
-    public Result<?> picEdit(@PathVariable Integer uid, @PathVariable Integer picId, MultipartFile pic) {
+    @PutMapping("/pic/{picId}")
+    public Result<?> picEdit(@RequestAttribute("id") Integer uid, @PathVariable Integer picId, MultipartFile pic) {
         try {
             int code = productService.picEdit(uid, picId, pic);
             switch(code) {
@@ -82,15 +90,16 @@ public class ProductController {
     }
 
     /**
-     * 删除商品图
+     * 用户-删除商品图
      */
-    @DeleteMapping("pic/{uid}/{picId}")
-    public Result<?> picDel(@PathVariable Integer uid, @PathVariable Integer picId) {
+    @DeleteMapping("/pic/{picId}")
+    public Result<?> picDel(@RequestAttribute("id") Integer uid, @PathVariable Integer picId) {
         int code = productService.picDel(uid, picId);
         switch(code) {
-            case 1: return Result.set(code, "上传成功！");
+            case 1: return Result.set(code, "成功删除！");
             case -1: return Result.set(code, "用户不存在！");
             case -2: return Result.set(code, "无权限或商品不存在！");
+            case -3: return Result.set(code, "禁止删主图！");
             default: return Result.fail();
         }
     }
@@ -98,8 +107,8 @@ public class ProductController {
     /**
      * 用户-获取自己已发布的商品列表
      */
-    @GetMapping("/{uid}")
-    public Result<?> get(@PathVariable Integer uid) {
+    @GetMapping
+    public Result<?> get(@RequestAttribute("id") Integer uid) {
         List<Product> products = productService.get(uid);
         if(products == null) {
             return Result.set(-1, "暂无商品！");
@@ -110,8 +119,8 @@ public class ProductController {
     /**
      * 用户-修改商品
      */
-    @PutMapping("/{uid}")
-    public Result<?> edit(@PathVariable Integer uid, @RequestBody Product product) {
+    @PutMapping
+    public Result<?> edit(@RequestAttribute("id") Integer uid, @RequestBody Product product) {
         int code = productService.edit(uid, product);
         switch(code) {
             case 1: return Result.set(code, "修改成功！");
@@ -124,11 +133,11 @@ public class ProductController {
     /**
      * 用户-删除商品（不再出售）
      */
-    @DeleteMapping("/{uid}/{pid}")
-    public Result<?> del(@PathVariable Integer uid, @PathVariable Integer pid) {
+    @DeleteMapping("/{pid}")
+    public Result<?> del(@RequestAttribute("id") Integer uid, @PathVariable Integer pid) {
         int code = productService.del(uid, pid);
         switch(code) {
-            case 1: return Result.set(code, "删除成功！");
+            case 1: return Result.set(code, "成功删除！");
             case -1: return Result.set(code, "用户不存在！");
             case -2: return Result.set(code, "无权限或商品不存在！");
             default: return Result.fail();
@@ -136,18 +145,83 @@ public class ProductController {
     }
 
     /**
+     * 收藏商品
+     */
+    @PostMapping("/fav/{pid}")
+    public Result<?> fav(@RequestAttribute("id") Integer uid, @PathVariable Integer pid) {
+        int code = productService.fav(uid, pid);
+        switch(code) {
+            case 1: return Result.set(code, "收藏成功！");
+            case -1: return Result.set(code, "用户不存在！");
+            case -2: return Result.set(code, "商品不存在！");
+            case -3: return Result.set(code, "已经收藏过该商品了！");
+            default: return Result.fail();
+        }
+    }
+
+    /**
+     * 删除收藏
+     */
+    @DeleteMapping("/fav/{pid}")
+    public Result<?> favDel(@RequestAttribute("id") Integer uid, @PathVariable Integer pid) {
+        int code = productService.favDel(uid, pid);
+        switch(code) {
+            case 1: return Result.set(code, "成功删除！");
+            case -1: return Result.set(code, "收藏不存在！");
+            default: return Result.fail();
+        }
+    }
+
+    /**
+     * 获取收藏列表
+     */
+    @GetMapping("/fav")
+    public Result<?> favList(@RequestAttribute("id") Integer uid) {
+        List<Product> products = productService.favList(uid);
+        if(products.isEmpty() || products == null) {
+            return Result.set(-1, "收藏列表为空！");
+        }
+        return Result.set(1, "获取收藏列表成功！", products);
+    }
+
+    /**
+     * 获取商品的主图
+     */
+    @GetMapping("pic/main/{pid}")
+    public ResponseEntity<byte[]> getMainPic(@PathVariable Integer pid) {
+        byte[] pic = productService.getMainPic(pid);
+        if(pic == null || pic.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.setContentLength(pic.length);
+        return new ResponseEntity<>(pic, headers, HttpStatus.OK);
+    }
+
+    /**
+     * 获取商品的副图
+     */
+    @GetMapping("/pic/sub/{pid}")
+    public ResponseEntity<?> getSubPic(@PathVariable Integer pid) {
+        return null;
+    }
+
+    
+    /**
      * 分页获取商品列表
      */
-    @GetMapping
+    @GetMapping("/lists")
     public Result<?> list(
+        @RequestAttribute("id") Integer uid,
         @RequestParam(required = true) Integer page,
         @RequestParam(required = true) Integer size,
         @RequestParam String[] category, // 分类
-        @RequestParam Integer price,
-        @RequestParam Integer time
+        @RequestParam Integer price, // 排序
+        @RequestParam Integer time,
+        @RequestParam String key
     ) {
-
-        return Result.fail();
+        return Result.set(1, "成功返回", productService.list(uid, page, size, category, price, time, key));
     }
-    
+
 }

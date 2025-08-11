@@ -1,6 +1,7 @@
 package top.otsuland.market.service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -8,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.PageHelper;
+
 import top.otsuland.market.entity.Product;
+import top.otsuland.market.entity.ProductFav;
 import top.otsuland.market.entity.ProductPic;
+import top.otsuland.market.mapper.ProductFavMapper;
 import top.otsuland.market.mapper.ProductMapper;
 import top.otsuland.market.mapper.ProductPicMapper;
 import top.otsuland.market.mapper.UserMapper;
@@ -22,7 +27,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductMapper productMapper;
+    
+    @Autowired
     private ProductPicMapper productPicMapper;
+
+    @Autowired
+    private ProductFavMapper productFavMapper;
 
 
     /**
@@ -90,11 +100,11 @@ public class ProductServiceImpl implements ProductService {
             return -2;
         }
         productPicMapper.updatePicById(picId, pic.getBytes());
-        return 0;
+        return 1;
     }
 
     /**
-     * 删除商品图（只能删副图
+     * 删除商品图（只能删副图）
      */
     @Override
     public int picDel(Integer uid, Integer picId) {
@@ -150,13 +160,16 @@ public class ProductServiceImpl implements ProductService {
             productMapper.updateAmountById(id, product.getAmount());
         }
         // 修改商品描述
-        if(StringUtils.isBlank(product.getProf())) {
+        if(!StringUtils.isBlank(product.getProf())) {
             productMapper.updateProfById(id, product.getProf());
         }
         // 修改成功！
         return 1;
     }
 
+    /**
+     * 删除商品
+     */
     @Override
     public int del(Integer uid, Integer pid) {
         // 用户不存在！
@@ -170,5 +183,92 @@ public class ProductServiceImpl implements ProductService {
         // 成功删除！
         productMapper.deleteById(pid);
         return 1;
+    }
+
+    /**
+     * 收藏商品
+     */
+    @Override
+    public int fav(Integer uid, Integer pid) {
+        // 用户不存在！
+        if(userMapper.selectById(uid) == null) {
+            return -1;
+        }
+        // 商品不存在！
+        if(productMapper.selectById(pid) == null) {
+            return -2;
+        }
+        // 已经收藏过该商品了！
+        if(productFavMapper.selectByUidAndPid(uid, pid) != null) {
+            return -3;
+        }
+        ProductFav productFav = new ProductFav();
+        productFav.setPid(pid);
+        productFav.setUid(uid);
+        productFavMapper.insert(productFav);
+        return 1;
+    }
+
+    /**
+     * 取消收藏商品
+     */
+    @Override
+    public int favDel(Integer uid, Integer pid) {
+        ProductFav pf = productFavMapper.selectByUidAndPid(uid, pid);
+        // 收藏不存在！
+        if(pf == null) {
+            return -1;
+        }
+        productFavMapper.deleteById(pf.getId());
+        return 1;
+    }
+
+    /**
+     * 获取收藏列表
+     * ok
+     */
+    @Override
+    public List<Product> favList(Integer uid) {
+        List<Integer> ids = productFavMapper.selectIdsByUid(uid);
+        if( ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Product> ps = productMapper.selectByIds(ids);
+        return ps;
+    }
+
+    /**
+     * 获取商品的主图
+     */
+    @Override
+    public byte[] getMainPic(Integer pid) {
+        if((pid == null) || (productPicMapper.selectMainByPid(pid) == null)) {
+            return null;
+        }
+        return productPicMapper.selectMainByPid(pid).getPicture();
+    }
+
+    /**
+     * 获取商品的副图
+     */
+    @Override
+    public List<ProductPic> getSubPic(Integer pid) {
+        if(pid == null) {
+            return null;
+        }
+        return productPicMapper.selectSubByPid(pid);
+    }
+
+    /**
+     * 获取商品列表
+     */
+    @Override
+    public List<Product> list(
+        Integer uid, Integer page, Integer size,
+        String[] category, Integer price, Integer time, String key) {
+        // 分页查询
+        PageHelper.startPage(page, size);
+        List<Product> products = productMapper.selectList(null);
+        return products;
     }
 }

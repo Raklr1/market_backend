@@ -1,5 +1,7 @@
 package top.otsuland.market.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,8 +11,9 @@ import top.otsuland.market.entity.ProductPic;
 
 @Mapper
 public interface ProductPicMapper extends BaseMapper<ProductPic> {
-    ProductPic selectByPid(Integer pid);
+    List<ProductPic> selectByPid(Integer pid);
     ProductPic selectMainByPid(Integer pid);
+    List<ProductPic> selectSubByPid(Integer pid);
     Integer countSubByPid(Integer pid);
     ProductPic selectByUidAndId(@Param("uid") Integer uid, @Param("id") Integer id);
     int updatePicById(@Param("id") Integer id, @Param("pic") byte[] pic);

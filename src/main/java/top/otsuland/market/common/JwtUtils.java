@@ -30,7 +30,7 @@ public class JwtUtils {
      */
     public static String geneJWT(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
+        claims.put("userId", user.getId());
         String token = Jwts.builder().claims()
                 .add(claims)      // 添加内容
                 .subject(SUBJECT) // 声明主题
@@ -43,32 +43,14 @@ public class JwtUtils {
     }
 
     /**
-     * 解析令牌？
+     * 解析令牌
      */
     public static Claims checkJWT(String token) {
-        try {
-            final Claims claims = Jwts.parser()
-                    .verifyWith(KEY)
-                    .build()
-                    .parse(token).accept(Jws.CLAIMS) // 解析 JWS
-                    .getPayload(); // JWT 有效载荷
-            return claims;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * 解析令牌
-     * ok
-     */
-    public static Integer validateJWT(String token) {
-        Claims claim = Jwts.parser()
-            .verifyWith(KEY)
-            .build()
-            .parse(token).accept(Jws.CLAIMS) // 解析 JWS
-            .getPayload(); // JWT 有效载荷
-        Integer id = claim.get("id", Integer.class);
-        return id;
+        final Claims claims = Jwts.parser()
+                .verifyWith(KEY)
+                .build()
+                .parse(token).accept(Jws.CLAIMS) // 解析 JWS
+                .getPayload(); // JWT 有效载荷
+        return claims;
     }
 }

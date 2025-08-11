@@ -186,5 +186,4 @@ public class UserServiceImpl implements UserService{
         // 上传成功！
         return 1;
     }
-
 }

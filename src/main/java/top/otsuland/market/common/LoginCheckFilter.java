@@ -2,12 +2,12 @@ package top.otsuland.market.common;
 
 import java.io.IOException;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson2.JSON;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @WebFilter(urlPatterns = "/**")
-@Profile("prod")
+// @Profile("prod")
 public class LoginCheckFilter implements Filter{
 
     @Override
@@ -38,7 +38,7 @@ public class LoginCheckFilter implements Filter{
         log.info("请求的 URL: {}", url);
 
         // 判断是否是登录或注册请求
-        if(url.contains("login") || url.contains("register")) {
+        if(url.contains("login") || url.contains("register") || url.contains("pic")) {
             log.info("login or register, ok!");
 			chain.doFilter(request, response);
             return;
@@ -55,10 +55,13 @@ public class LoginCheckFilter implements Filter{
 
         // 解析 token
         try {
-            Integer userId = JwtUtils.validateJWT(jwt);
+            Claims claims = JwtUtils.checkJWT(jwt);
+            // jjwt 会将 Integer 存储为 Double，因为 json 本身没有整型和浮点数的区分，所以要注意 JWT 库的 JSON 解析行为！
+            Double idDouble = claims.get("userId", Double.class);
+            Integer id = idDouble.intValue();
             log.info("令牌合法，放行！");
             // 将用户 id 存入 request attribute
-            req.setAttribute("userId", userId);
+            request.setAttribute("id", id);
             chain.doFilter(request, response);
         } catch (Exception e) {
             e.printStackTrace();
