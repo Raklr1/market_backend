@@ -25,5 +25,5 @@ public interface UserMapper extends BaseMapper<User> {
     int updateTelById(@Param("id") Integer id, @Param("tel") String tel);
 
     int updateUsernameById(@Param("id") Integer id, @Param("username") String username);
-
+    String selectUsernameById(Integer id);
 }

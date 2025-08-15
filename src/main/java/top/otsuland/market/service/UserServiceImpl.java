@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import top.otsuland.market.common.PictureUtils;
 import top.otsuland.market.entity.User;
+import top.otsuland.market.entity.UserPic;
 import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.mapper.UserMapper;
 import top.otsuland.market.mapper.UserPicMapper;
@@ -164,6 +165,15 @@ public class UserServiceImpl implements UserService{
         return 1;
     }
 
+    @Override
+    public UserProfile getProf(Integer uid) {
+        // 用户不存在！
+        if(userMapper.selectById(uid) == null) {
+            return null;
+        }
+        return userProfileMapper.selectByUid(uid);
+    }
+
     /**
      * 上传头像图片
      * ok
@@ -185,5 +195,14 @@ public class UserServiceImpl implements UserService{
         userPicMapper.updatePicById(id, pic.getBytes());
         // 上传成功！
         return 1;
+    }
+
+    @Override
+    public byte[] getIcon(Integer uid) {
+        UserPic upic = userPicMapper.selectByUserId(uid);
+        if(upic == null) {
+            return null;
+        }
+        return upic.getPicture();
     }
 }

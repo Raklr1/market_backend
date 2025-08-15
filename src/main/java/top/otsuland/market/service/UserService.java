@@ -17,5 +17,7 @@ public interface UserService {
     User withId(User user);
     int meta(Integer id, User user);
     int prof(Integer id, UserProfile userProfile);
+    UserProfile getProf(Integer uid);
     int icon(Integer id, MultipartFile pic) throws IOException;
+    byte[] getIcon(Integer uid);
 }

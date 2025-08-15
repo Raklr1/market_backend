@@ -37,4 +37,10 @@
         update a_user set username = #{username} where id = #{id};
     </update>
 
+    <!-- selectUsernameById --> 
+
+    <select id="selectUsernameById">
+        select username from a_user
+        where id = #{id};
+    </select>
 </mapper>

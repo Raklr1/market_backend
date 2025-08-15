@@ -29,4 +29,9 @@
         update user_profile set prof = #{prof} where id = #{id};
     </update>
 
+    <!-- selectByUid --> 
+
+    <select id="selectByUid">
+        select * from user_profile where user_id = #{uid};
+    </select>
 </mapper>
