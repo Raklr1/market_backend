@@ -18,5 +18,5 @@ public class ProductCategory {
     private Integer productId;
 
     @TableField
-    private String category;
+    private Integer categoryId;
 }

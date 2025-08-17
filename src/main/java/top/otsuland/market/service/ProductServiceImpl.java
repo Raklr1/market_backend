@@ -1,6 +1,7 @@
 package top.otsuland.market.service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import top.otsuland.market.dto.ProductCreateReq;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.entity.ProductFav;
 import top.otsuland.market.entity.ProductPic;
+import top.otsuland.market.mapper.ProductCategoryMapper;
 import top.otsuland.market.mapper.ProductFavMapper;
 import top.otsuland.market.mapper.ProductMapper;
 import top.otsuland.market.mapper.ProductPicMapper;
@@ -34,22 +38,34 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductFavMapper productFavMapper;
 
+    @Autowired
+    private ProductCategoryMapper productCategoryMapper;
+
 
     /**
      * 添加商品
      */
     @Override
-    public int add(Integer uid, Product product) {
+    public int add(Integer uid, ProductCreateReq pcr) {
         // 用户不存在！
         if(userMapper.selectById(uid) == null) {
             return -1;
         }
         // 信息不完整
-        if(StringUtils.isAnyBlank(product.getName(), product.getPrice())
-            || product.getAmount() == null) {
+        if(StringUtils.isBlank(pcr.getName()) ||
+            pcr.getAmount() == null ||
+            pcr.getPrice() == null) {
             return -2;
         }
+        Product product = new Product();
+        product.setName(pcr.getName());
+        product.setPrice(pcr.getPrice());
+        product.setAmount(pcr.getAmount());
+        product.setProf(pcr.getProf());
         product.setSellerId(uid);
+        product.setSellerName(userMapper.selectUsernameById(uid));
+        product.setState(0);
+        product.setWant(0);
         productMapper.insert(product);
         return 1;
     }
@@ -152,7 +168,7 @@ public class ProductServiceImpl implements ProductService {
             productMapper.updateNameById(id, product.getName());
         }
         // 修改价格
-        if(!StringUtils.isBlank(product.getPrice())) {
+        if(product.getPrice() == null) {
             productMapper.updatePriceById(id, product.getPrice());
         }
         // 修改数量
@@ -263,12 +279,45 @@ public class ProductServiceImpl implements ProductService {
      * 获取商品列表
      */
     @Override
-    public List<Product> list(
-        Integer uid, Integer page, Integer size,
-        String[] category, Integer price, Integer time, String key) {
-        // 分页查询
-        PageHelper.startPage(page, size);
-        List<Product> products = productMapper.selectList(null);
-        return products;
+    public Page<Product> list(
+        Page<Product> pageParam, Integer uid, List<Integer> categoryIds,
+        Integer priceSort, Integer timeSort, String keyword
+    ) {
+        // 构建查询条件
+        LambdaQueryWrapper<Product> queryWrapper = new LambdaQueryWrapper<>();
+        // 商品未删除
+        queryWrapper.eq(Product::getState, Arrays.asList(2, 3));
+        // 分类筛选
+        if(categoryIds != null && !categoryIds.isEmpty()) {
+            List<Integer> productIds = productCategoryMapper.selectProductIdsByCategoryIds(categoryIds);
+            if(productIds.isEmpty()) {
+                return new Page<>(pageParam.getCurrent(), pageParam.getSize(), 0);
+            }
+            queryWrapper.in(Product::getId, productIds);
+        }
+        // 关键词搜索
+        if(org.springframework.util.StringUtils.hasText(keyword)) {
+            // 模糊匹配用户名搜索
+            if(keyword.startsWith("@")) {
+                String username = keyword.substring(1);
+                queryWrapper.like(Product::getSellerName, username);
+            } else {
+                queryWrapper.and(wrapper -> wrapper
+                    .like(Product::getName, keyword)
+                    .or()
+                    .like(Product::getProf, keyword)
+                );
+            }
+            
+        }
+        // 处理排序
+        if(priceSort != null) {
+            queryWrapper.orderBy(true, priceSort == 1, Product::getPrice);
+        }
+        if(timeSort != null) {
+            queryWrapper.orderBy(true, timeSort == 1, Product::getCreateTime);
+        }
+        // 执行分页查询
+        return productMapper.selectPage(pageParam, queryWrapper);
     }
 }

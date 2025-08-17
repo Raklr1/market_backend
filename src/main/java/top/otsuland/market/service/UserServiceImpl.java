@@ -6,12 +6,19 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+
 import top.otsuland.market.common.PictureUtils;
+import top.otsuland.market.dto.UserFollowResp;
+import top.otsuland.market.dto.UserMetaResq;
 import top.otsuland.market.entity.User;
+import top.otsuland.market.entity.UserFollow;
 import top.otsuland.market.entity.UserPic;
 import top.otsuland.market.entity.UserProfile;
+import top.otsuland.market.mapper.UserFollowMapper;
 import top.otsuland.market.mapper.UserMapper;
 import top.otsuland.market.mapper.UserPicMapper;
 import top.otsuland.market.mapper.UserProfileMapper;
@@ -27,6 +34,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserPicMapper userPicMapper;
+
+    @Autowired
+    private UserFollowMapper userFollowMapper;
 
     @Override
     public List<User> getUsersList() {
@@ -52,6 +62,8 @@ public class UserServiceImpl implements UserService{
             // 该电话号码已经被注册！
             return -2;
         }
+        user.setFollow(0);
+        user.setFans(0);
         int row = userMapper.insert(user);
         if(row <= 0) {
             return 0;
@@ -135,6 +147,23 @@ public class UserServiceImpl implements UserService{
     }
 
     /**
+     * 获取基本信息
+     */
+    @Override
+    public UserMetaResq getMeta(Integer uid) {
+        User user = userMapper.selectById(uid);
+        if(userMapper.selectById(uid) != null) {
+            UserMetaResq umr = new UserMetaResq();
+            umr.setUsername(user.getUsername());
+            umr.setTel(user.getTel());
+            umr.setFollow(user.getFollow());
+            umr.setFans(user.getFans());
+            return umr;
+        }
+        return null;
+    }
+
+    /**
      * 修改个人简介
      * ok
      */
@@ -204,5 +233,80 @@ public class UserServiceImpl implements UserService{
             return null;
         }
         return upic.getPicture();
+    }
+
+    @Override
+    @Transactional
+    public int follow(Integer uid, Integer fid) {
+        if(userMapper.selectById(uid) == null ||
+            userMapper.selectById(fid) == null) {
+            return 0;
+        }
+        if(userFollowMapper.selectByFolloweeAndFollower(fid, uid) != null) {
+            return -1;
+        }
+        UserFollow ufo = new UserFollow();
+        ufo.setFolloweeId(fid);
+        ufo.setFollowerId(uid);
+        userFollowMapper.insert(ufo);
+
+        // MySQL 需要添加 allowMultiQueries=true
+        int updateFollow = userMapper.update(null,
+            new UpdateWrapper<User>()
+                .setSql("follow = follow + 1") // 关注者关注数 + 1
+                .eq("id", uid)
+        );
+        int updateFans = userMapper.update(null,
+            new UpdateWrapper<User>()
+                .setSql("fans = fans + 1")
+                .eq("id", fid)
+        );
+        if(updateFollow == 0 || updateFans == 0) {
+            throw new RuntimeException("更新计数器失败！");
+        }
+        return 1;
+    }
+
+    @Override
+    @Transactional
+    public int disfollow(Integer uid, Integer fid) {
+        if(userMapper.selectById(uid) == null ||
+            userMapper.selectById(fid) == null ||
+            userMapper.selectById(uid).getFollow() <= 0 ||
+            userMapper.selectById(fid).getFans() <= 0
+        ) {
+            return 0;
+        }
+        if(userFollowMapper.selectByFolloweeAndFollower(fid, uid) == null) {
+            return -1;
+        }
+        int ufid = userFollowMapper.selectByFolloweeAndFollower(fid, uid).getId();
+        userFollowMapper.deleteById(ufid);
+        int updateFollow = userMapper.update(null,
+            new UpdateWrapper<User>()
+                .setSql("follow = follow - 1")
+                .eq("id", uid)
+        );
+        int updateFans = userMapper.update(null,
+            new UpdateWrapper<User>()
+                .setSql("fans = fans - 1")
+                .eq("id", fid)
+        );
+        if(updateFollow == 0 || updateFans == 0) {
+            throw new RuntimeException("更新计数器失败！");
+        }
+        return 1;
+    }
+
+    // 获取关注列表
+    @Override
+    public List<UserFollowResp> getFollowee(Integer uid) {
+        return userMapper.selectFolloweesByUid(uid);
+    }
+
+    // 获取粉丝列表
+    @Override
+    public List<UserFollowResp> getFollower(Integer uid) {
+        return userMapper.selectFollowersByUid(uid);
     }
 }

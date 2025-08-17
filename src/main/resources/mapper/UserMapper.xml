@@ -43,4 +43,22 @@
         select username from a_user
         where id = #{id};
     </select>
+
+    <!-- selectFolloweesByUid --> 
+
+    <select id="selectFolloweesByUid">
+        select u.id, u.username
+        from a_user u
+        join user_follow f on f.followee_id = u.id
+        where f.follower_id = #{uid};
+    </select>
+
+    <!-- selectFollowersByUid --> 
+
+    <select id="selectFollowersByUid">
+        select u.id, u.username
+        from a_user u
+        join user_follow f on f.follower_id = u.id
+        where f.followee_id = #{uid};
+    </select>
 </mapper>

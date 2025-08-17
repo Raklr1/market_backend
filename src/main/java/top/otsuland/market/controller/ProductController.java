@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import top.otsuland.market.common.Result;
+import top.otsuland.market.dto.PageResult;
+import top.otsuland.market.dto.ProductCreateReq;
+import top.otsuland.market.dto.ProductVO;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.service.ProductService;
 
@@ -37,8 +42,10 @@ public class ProductController {
      * 用户-添加商品
      */
     @PostMapping
-    public Result<?> add(@RequestAttribute("id") Integer uid, @RequestBody Product product) {
-        int code = productService.add(uid, product);
+    public Result<?> add(
+        @RequestAttribute("id") Integer uid,
+        @RequestBody ProductCreateReq pcr) {
+        int code = productService.add(uid, pcr);
         switch(code) {
             case 1: return Result.set(code, "上传成功！");
             case -1: return Result.set(code, "用户不存在！");
@@ -214,14 +221,30 @@ public class ProductController {
     @GetMapping("/lists")
     public Result<?> list(
         @RequestAttribute("id") Integer uid,
-        @RequestParam(required = true) Integer page,
-        @RequestParam(required = true) Integer size,
-        @RequestParam String[] category, // 分类
-        @RequestParam Integer price, // 排序
-        @RequestParam Integer time,
-        @RequestParam String key
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size,
+        @RequestParam(required = false) List<Integer> categoryIds, // 分类，集合类型必需显式声明为非必需
+        @RequestParam(required = false) Integer priceSort, // 排序
+        @RequestParam(required = false) Integer timeSort,
+        @RequestParam(required = false) String keyword
     ) {
-        return Result.set(1, "成功返回", productService.list(uid, page, size, category, price, time, key));
+        Page<Product> pageParam = new Page<>(page, size);
+        Page<Product> productPage = productService.list(pageParam, uid, categoryIds, priceSort, timeSort, keyword);
+        PageResult<ProductVO> result = PageResult.of(productPage, this::convertToVO);
+        return Result.set(1, "获取成功！", result);
+    }
+
+    private ProductVO convertToVO(Product product) {
+        return new ProductVO(
+            product.getId(),
+            product.getName(),
+            product.getPrice(),
+            product.getAmount(),
+            product.getSellerId(),
+            product.getState(),
+            product.getWant(),
+            product.getSellerName()
+        );
     }
 
 }

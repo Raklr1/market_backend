@@ -13,11 +13,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
+import top.otsuland.market.dto.UserFollowResp;
+import top.otsuland.market.dto.UserProfResq;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.service.UserService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -81,13 +85,11 @@ public class UserController {
      * ok
      */
     @PutMapping
-    public Result<?> meta(@RequestAttribute("id") Integer id, @RequestBody User user) {
-        int code = userService.meta(id, user);
-        switch(code) {
-            case -1: return Result.set(code, "用户不存在！");
-            case 1: return Result.set(code, "修改成功！");
-            default: return Result.fail();
+    public Result<?> meta(@RequestAttribute("id") Integer uid, @RequestBody User user) {
+        if(userService.meta(uid, user) == 1) {
+            return Result.set(1, "修改成功！", userService.getMeta(uid));
         }
+        return Result.set(0, "修改失败！");
     }
 
     /**
@@ -106,13 +108,17 @@ public class UserController {
     /**
      * 获取个人简介
      */
-    @GetMapping("/prof")
-    public Result<?> getProf(@RequestAttribute("id") Integer id) {
-        UserProfile uprof =  userService.getProf(id);
+    @GetMapping("/prof/{uid}")
+    public Result<?> getProf(@PathVariable Integer uid) {
+        UserProfile uprof =  userService.getProf(uid);
         if(uprof == null) {
             return Result.set(0, "获取失败！");
         }
-        return Result.set(1, "获取成功！", uprof);
+        UserProfResq upr = new UserProfResq(uprof);
+        upr.setUsername(userService.getMeta(uid).getUsername());
+        upr.setFollow(userService.getMeta(uid).getFollow());
+        upr.setFans(userService.getMeta(uid).getFans());
+        return Result.set(1, "获取成功！", upr);
     }
 
     /**
@@ -138,8 +144,8 @@ public class UserController {
     /**
      * 下载头像
      */
-    @GetMapping("/icon")
-    public ResponseEntity<?> loadIcon2(@RequestAttribute("id") Integer uid) {
+    @GetMapping("/icon/{uid}")
+    public ResponseEntity<?> loadIcon2(@PathVariable Integer uid) {
         byte[] image = userService.getIcon(uid);
         if(image == null) {
             return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(null);
@@ -149,6 +155,60 @@ public class UserController {
         headers.setContentType(MediaType.IMAGE_PNG);
         headers.setContentDispositionFormData("inline", filename);
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
+    }
+
+    /**
+     * 关注用户
+     */
+    @PutMapping("/follow/{fid}")
+    public Result<?> follow(@RequestAttribute("id") Integer uid, @PathVariable Integer fid) {
+        int code = userService.follow(uid, fid);
+        if(code == 1) {
+            return Result.set(1, "关注成功！");
+        }
+        if(code == -1) {
+            return Result.set(-1, "已关注！");
+        }
+        return Result.set(0, "关注失败！");
+    }
+
+    /**
+     * 取消关注
+     */
+    @DeleteMapping("/follow/{fid}")
+    public Result<?> disfollow(@RequestAttribute("id") Integer uid, @PathVariable Integer fid) {
+        int code = userService.disfollow(uid, fid);
+        if(code == 1) {
+            return Result.set(1, "取消关注！");
+        }
+        if(code == -1) {
+            return Result.set(-1, "未关注！");
+        }
+        return Result.set(0, "取消失败！");
+    }
+
+    /**
+     * 获取关注列表
+     */
+    @GetMapping("/follow/{uid}")
+    public Result<?> getfollower(@PathVariable Integer uid) {
+        List<UserFollowResp> ufr = userService.getFollowee(uid);
+        if(ufr == null || ufr.isEmpty()) {
+            return Result.set(0, "未能获取！");
+        }
+        return Result.set(1, "获取成功！", ufr);
+    }
+
+    /**
+     * 获取粉丝列表
+     */
+    @GetMapping("/fans/{uid}")
+    public Result<?> getfollowing(@PathVariable Integer uid) {
+        List<UserFollowResp> ufr = userService.getFollower(uid);
+        if(ufr == null || ufr.isEmpty()) {
+            return Result.set(0, "未能获取！");
+        }
+        return Result.set(1, "获取成功！", ufr);
     }
 
 }

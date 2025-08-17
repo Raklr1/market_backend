@@ -1,5 +1,9 @@
 package top.otsuland.market.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,7 +22,7 @@ public class Product {
     private String name;
 
     @TableField
-    private String price; // TODO 学习 decimalformat
+    private BigDecimal price;
 
     @TableField
     private Integer amount;
@@ -28,6 +32,13 @@ public class Product {
 
     @TableField
     private Integer sellerId;
+
+    @TableField
+    private String sellerName;
+
+    // MyBatis-Plus 自动填充
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
     // 有权限的属性
     @TableField

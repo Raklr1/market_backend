@@ -8,25 +8,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("a_user")
-public class User {
-
+@TableName("user_follow")
+public class UserFollow {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
+    // 被关注者
     @TableField
-    private String username;
+    private Integer followeeId;
 
+    // 关注别人的人
     @TableField
-    private String pwd;
-    
-    @TableField
-    private String tel;
-
-    @TableField
-    private Integer follow;
-
-    @TableField
-    private Integer fans;
-
+    private Integer followerId;
 }

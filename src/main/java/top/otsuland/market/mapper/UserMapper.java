@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import top.otsuland.market.dto.UserFollowResp;
 import top.otsuland.market.entity.User;
 
 @Mapper
@@ -26,4 +27,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     int updateUsernameById(@Param("id") Integer id, @Param("username") String username);
     String selectUsernameById(Integer id);
+
+    List<UserFollowResp> selectFolloweesByUid(Integer uid);
+
+    List<UserFollowResp> selectFollowersByUid(Integer uid);
 }
