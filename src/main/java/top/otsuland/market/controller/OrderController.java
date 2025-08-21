@@ -7,17 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import top.otsuland.market.common.Result;
-import top.otsuland.market.dto.OrderReq;
+import top.otsuland.market.dto.OrderStatusReq;
+import top.otsuland.market.entity.Order;
 import top.otsuland.market.service.OrderService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
-
 
 @RestController
 @RequestMapping("/api/orders")
@@ -27,56 +24,30 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public Result<?> createOrder(@RequestAttribute("id") Integer uid, @RequestBody OrderReq orderReq ) {
-        
-        
-        return null;
+    public Result<?> create(@RequestAttribute("id") Integer uid, @RequestBody Order order) {
+        int row = orderService.create(uid, order);
+        if(row == -1) {
+            return Result.set(-1, "缺少信息！");
+        } else if(row == 0) {
+            return Result.set(0, "用户不存在！");
+        }
+        return Result.set(1, "创建成功！", row);
     }
 
-    @PostMapping("/products")
-    public Result<?> addProduct(@RequestBody String entity) {
-        //TODO: process POST request
-        
-        return null;
-    }
-
-    @PutMapping("/{id}")
-    public Result<?> status(@PathVariable String id, @RequestBody String entity) {
+    @PutMapping("/{orderId}")
+    public Result<?> editStatus(@PathVariable Integer orderId, @RequestBody OrderStatusReq osr) {
         
         return null;
     }
 
-    @DeleteMapping("/{id}")
-    public Result<?> deleteOrder() {
-        return null;
-    }
-
-    @DeleteMapping("/products/{id}")
-    public Result<?> deleteProduct() {
-        return null;
-    }
-
-    @PostMapping("path")
-    public String postMethodName(@RequestBody String entity) {
-        //TODO: process POST request
+    @DeleteMapping("/{orderId}")
+    public Result<?> delete(@PathVariable Integer orderId) {
         
-        return entity;
-    }
-
-    @GetMapping("/{orderId}")
-    public Result<?> get(@RequestParam String param) {
         return null;
     }
 
-    @GetMapping("/users")
-    public Result<?> user(@RequestAttribute("id") Integer uid) {
+    @GetMapping
+    public Result<?> getOrders(@RequestAttribute("id") Integer uid) {
         return null;
     }
-    
-    
-    
-    
-    
-
-
 }
