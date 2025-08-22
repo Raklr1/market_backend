@@ -1,9 +1,12 @@
 package top.otsuland.market.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 
 import top.otsuland.market.dto.OrderStatusReq;
@@ -100,6 +103,21 @@ public class OrderServiceImpl implements OrderService {
             wrapper.set(Order::getState, 4);
             hasUpdate = true;
         }
+        // 0 -> 5 已取消
+        if(order.getState() == 0 && osr.getStatus() == 5) {
+            wrapper.set(Order::getState, 5);
+            hasUpdate = true;
+        }
+        // 6 已退款
+        if(order.getState() >= 1 && osr.getStatus() == 6) {
+            wrapper.set(Order::getState, 6);
+            hasUpdate = true;
+        }
+        // 2/3 -> 7 已退货
+        if((order.getState() == 2 || order.getState() == 3) && osr.getStatus() == 7) {
+            wrapper.set(Order::getState, 7);
+            hasUpdate = true;
+        }
         if(!hasUpdate) {
             return 0;
         }
@@ -110,9 +128,20 @@ public class OrderServiceImpl implements OrderService {
         return -2;
     }
 
+    // @Override
+    // public int delete(Integer uid, Integer oid) {
+        
+    //     return 0;
+    // }
+
     @Override
-    public int delete(Integer uid, Integer oid) {
-        // TODO Auto-generated method stub
-        return 0;
+    public List<Order> get(Integer uid) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.nested(wq -> wq
+            .eq(Order::getBuyerId, uid)
+            .or()
+            .eq(Order::getSellerId, uid)
+        );
+        return orderMapper.selectList(wrapper);
     }
 }

@@ -1,5 +1,7 @@
 package top.otsuland.market.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -12,7 +14,6 @@ import top.otsuland.market.entity.Order;
 import top.otsuland.market.service.OrderService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -36,18 +37,28 @@ public class OrderController {
 
     @PutMapping("/{orderId}")
     public Result<?> editStatus(@PathVariable Integer orderId, @RequestBody OrderStatusReq osr) {
-        
-        return null;
+        int row = orderService.status(orderId, osr);
+        if(row == 1) {
+            return Result.set(1, "修改成功！");
+        }
+        return Result.set(0, "创建失败！");
     }
 
-    @DeleteMapping("/{orderId}")
-    public Result<?> delete(@PathVariable Integer orderId) {
-        
-        return null;
-    }
+    // @DeleteMapping("/{orderId}")
+    // public Result<?> delete(@RequestAttribute("id") Integer uid, @PathVariable Integer orderId) {
+    //     int row = orderService.delete(uid, orderId);
+    //     if(row == 1) {
+    //         return Result.set(1, "已删除！");
+    //     }
+    //     return Result.set(0, "删除失败！");
+    // }
 
     @GetMapping
     public Result<?> getOrders(@RequestAttribute("id") Integer uid) {
-        return null;
-    }
+        List<Order> orders = orderService.get(uid);
+        if(orders == null || orders.isEmpty()) {
+            return Result.set(0, "获取失败！");
+        }
+        return Result.set(1, "获取成功！", orders);
+    }        
 }
