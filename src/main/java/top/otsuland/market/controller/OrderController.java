@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
@@ -41,17 +42,8 @@ public class OrderController {
         if(row == 1) {
             return Result.set(1, "修改成功！");
         }
-        return Result.set(0, "创建失败！");
+        return Result.set(0, "修改失败！");
     }
-
-    // @DeleteMapping("/{orderId}")
-    // public Result<?> delete(@RequestAttribute("id") Integer uid, @PathVariable Integer orderId) {
-    //     int row = orderService.delete(uid, orderId);
-    //     if(row == 1) {
-    //         return Result.set(1, "已删除！");
-    //     }
-    //     return Result.set(0, "删除失败！");
-    // }
 
     @GetMapping
     public Result<?> getOrders(@RequestAttribute("id") Integer uid) {
@@ -60,5 +52,13 @@ public class OrderController {
             return Result.set(0, "获取失败！");
         }
         return Result.set(1, "获取成功！", orders);
-    }        
+    }
+    
+    @PostMapping("/comment/{orderId}")
+    public Result<?> comment(@RequestAttribute("id") Integer uid, @RequestBody Order order) {
+        //TODO: process POST request
+        
+        return null;
+    }
+
 }

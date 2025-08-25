@@ -18,4 +18,5 @@ public interface ProductMapper extends BaseMapper<Product> {
     int updateAmountById(Integer id, Integer amount);
     int updateProfById(Integer id, String prof);
     List<Product> selectByIds(List<Integer> ids);
+    String selectNameById(Integer id);
 }

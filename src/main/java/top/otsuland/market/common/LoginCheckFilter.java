@@ -48,7 +48,7 @@ public class LoginCheckFilter implements Filter{
         String jwt = req.getHeader("token");
         if(!StringUtils.hasLength(jwt)) {
             log.info("not login, fail!");
-			String notLogin = JSON.toJSONString(Result.set(0, "认证未认证！"));
+			String notLogin = JSON.toJSONString(Result.set(0, ""));
             resp.getWriter().write(notLogin);
             return;
         }

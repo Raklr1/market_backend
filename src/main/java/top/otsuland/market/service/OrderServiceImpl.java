@@ -48,19 +48,12 @@ public class OrderServiceImpl implements OrderService {
         ) {
             return -1;
         }
-        if(or.getProductName() == null || or.getProductName().isEmpty() ||
-            or.getSellerName() == null || or.getSellerName().isEmpty() ||
-            or.getBuyerName() == null || or.getBuyerName().isEmpty()
-        ) {
-            return -1;
-        }
-
         // 减少商品库存
         LambdaUpdateWrapper<Product> productWrapper = new LambdaUpdateWrapper<>();
         productWrapper.eq(Product::getId, or.getProductId())
             .gt(Product::getAmount, 0)
-            .setSql("amount = amount - 1")
-            .setSql("state = CASE WHEN (amount - 1) <= 0 THEN 1 ELSE state END");
+            .setSql("amount = amount - {0}", or.getProductAmount())
+            .setSql("state = CASE WHEN (amount - {0}) <= 0 THEN 1 ELSE state END", or.getProductAmount());
         int productRows = productMapper.update(null, productWrapper);
         if(productRows == 0) {
             // 已售罄！
@@ -68,6 +61,9 @@ public class OrderServiceImpl implements OrderService {
         }
         // 成功创建
         or.setState(0);
+        or.setProductName(productMapper.selectNameById(or.getProductId()));
+        or.setSellerName(userMapper.selectUsernameById(or.getSellerId()));
+        or.setBuyerName(userMapper.selectUsernameById(or.getBuyerId()));
         int row = orderMapper.insert(or);
         return row;
     }

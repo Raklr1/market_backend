@@ -49,5 +49,11 @@
             #{pid}
         </foreach>
     </select>
-    
+
+    <!-- selectNameById --> 
+
+    <select id="selectNameById">
+        select name from product
+        where id = #{id}
+    </select>    
 </mapper>

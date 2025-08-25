@@ -11,15 +11,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.Data;
 
+// order 是保留字
 @Data
-@TableName("order")
+@TableName("a_order")
 public class Order {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    // 订单号，区别于 id，暴露给用户
-    @TableField
-    private Integer number;
+    // // 订单号，区别于 id，暴露给用户
+    // @TableField
+    // private Integer number;
 
     @TableField
     private Integer productId;
@@ -67,7 +68,7 @@ public class Order {
     private String buyerComment;
 
     @TableField
-    private LocalDateTime buyerCommnetTime;
+    private LocalDateTime buyerCommentTime;
 
     @TableField
     private String sellerComment;
