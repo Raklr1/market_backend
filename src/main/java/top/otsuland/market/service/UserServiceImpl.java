@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService{
      * ok
      */
     @Override
+    @Transactional
     public int register(User user) {
         // 检测是否为空、空串、空白串
         if(StringUtils.isAnyBlank(user.getPwd(), user.getTel(), user.getUsername())) {
@@ -64,11 +65,16 @@ public class UserServiceImpl implements UserService{
         }
         user.setFollow(0);
         user.setFans(0);
-        int row = userMapper.insert(user);
-        if(row <= 0) {
-            return 0;
+        int row1 = userMapper.insert(user);
+
+        // 初始化 UserProfile
+        UserProfile up = new UserProfile();
+        up.setUserId(userMapper.selectByUsername(user.getUsername()).getId());
+        int row2 = userProfileMapper.insert(up);
+        if(row1 == 1 && row2 == 1) {
+            return 1;
         }
-        return 1;
+        return 0;
     }
 
     /**
