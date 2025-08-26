@@ -129,6 +129,19 @@ public class UserController {
         return Result.set(1, "获取成功！", upr);
     }
 
+    @GetMapping("/prof")
+    public Result<?> getProfWithoutUid(@RequestAttribute("id") Integer uid) {
+        UserProfile uprof =  userService.getProf(uid);
+        if(uprof == null) {
+            return Result.set(0, "获取失败！");
+        }
+        UserProfResq upr = new UserProfResq(uprof);
+        upr.setUsername(userService.getMeta(uid).getUsername());
+        upr.setFollow(userService.getMeta(uid).getFollow());
+        upr.setFans(userService.getMeta(uid).getFans());
+        return Result.set(1, "获取成功！", upr);
+    }
+
     /**
      * 上传头像
      * ok

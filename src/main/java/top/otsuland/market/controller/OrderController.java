@@ -1,11 +1,14 @@
 package top.otsuland.market.controller;
 
+import java.net.Inet4Address;
 import java.util.List;
 
+import org.apache.logging.log4j.util.SortedArrayStringMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import top.otsuland.market.common.Result;
@@ -34,6 +37,15 @@ public class OrderController {
             return Result.set(0, "用户不存在！");
         }
         return Result.set(1, "创建成功！", row);
+    }
+
+    @PutMapping("/payment/{orderId}")
+    public Result<?> editPaymentMethod(@PathVariable Integer orderId, @RequestParam Integer paymentMethod) {
+        int row = orderService.pay(orderId, paymentMethod);
+        if(row == 1) {
+            return Result.set(1, "修改成功！");
+        }
+        return Result.set(0, "修改失败！");
     }
 
     @PutMapping("/{orderId}")

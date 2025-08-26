@@ -10,4 +10,6 @@ public interface OrderService {
     int status(Integer orderId, OrderStatusReq osr);
     // int delete(Integer uid, Integer oid);
     List<Order> get(Integer uid);
+
+    int pay(Integer orderId, Integer paymentMethod);
 }

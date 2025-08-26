@@ -43,7 +43,6 @@ public class OrderServiceImpl implements OrderService {
             or.getProductAmount() == null ||
             or.getSellerId() == null ||
             or.getBuyerId() == null ||
-            or.getPaymentMethod() == null ||
             or.getTotalPrice() == null
         ) {
             return -1;
@@ -71,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public int status(Integer orderId, OrderStatusReq osr) {
         Order order = orderMapper.selectById(orderId);
-        if(order == null) {
+        if(order == null || order.getPaymentMethod() == 0) {
             return -1;
         }
 
@@ -121,14 +120,27 @@ public class OrderServiceImpl implements OrderService {
         if(rows > 0) {
             return 1;
         }
-        return -2;
+        return -1;
     }
 
-    // @Override
-    // public int delete(Integer uid, Integer oid) {
-        
-    //     return 0;
-    // }
+    @Override
+    public int pay(Integer orderId, Integer paymentMethod) {
+        Order order = orderMapper.selectById(orderId);
+        if(order == null) {
+            return -1;
+        }
+        if(paymentMethod != 1 || paymentMethod != 2) {
+            return -1;
+        }
+        LambdaUpdateWrapper<Order> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(Order::getId, orderId)
+            .set(Order::getPaymentMethod, paymentMethod);
+        int rows = orderMapper.update(null, wrapper);
+        if(rows > 0) {
+            return 1;
+        }
+        return -1;
+    }
 
     @Override
     public List<Order> get(Integer uid) {
