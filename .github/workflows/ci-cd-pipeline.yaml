@@ -1,0 +1,93 @@
+name: CI/CD Pipeline to Local K8s
+
+on:
+  push:
+    branches: [ "main" ] # 当代码推送到main分支时触发
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest # GitHub托管的Runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Run Unit Tests
+      run: mvn test # 这会运行你所有的单元测试，确保正反用例都通过
+
+    - name: Build with Maven
+      run: mvn clean package -DskipTests # 上一步已测试，这里跳过
+
+    - name: Build Backend Docker image
+      run: |
+        docker build -t your-dockerhub-username/your-backend-app:latest -f Dockerfile.backend .
+    - name: Build Frontend Docker image
+      run: |
+        docker build -t your-dockerhub-username/your-frontend-app:latest -f Dockerfile.frontend .
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Push Docker images
+      run: |
+        docker push your-dockerhub-username/your-backend-app:latest
+        docker push your-dockerhub-username/your-frontend-app:latest
+
+  deploy-to-k8s:
+    needs: test-and-build # 依赖于上一个job成功
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure K8s for Docker Desktop (Simulated)
+      run: |
+        # 注意：GitHub的Runner不在你的本地机器上，无法直接访问你的K8s。
+        # 你需要一个自托管的Runner在你的本地电脑上，或者使用以下替代方案：
+        # 1. 将K8s YAML文件部署到远程测试环境（不符合本地要求）
+        # 2. （为实现本地部署）使用SSH Action连接到你的本地机器执行命令
+        echo "This step would normally deploy to a remote cluster."
+        # 我们将使用下一步的SSH方案
+
+    - name: Deploy to Local K8s via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.LOCAL_SSH_HOST }} # 你本地电脑的IP，如192.168.1.x
+        username: ${{ secrets.LOCAL_SSH_USERNAME }}
+        key: ${{ secrets.LOCAL_SSH_KEY }}
+        script: |
+          kubectl apply -f k8s/
+          # 等待部署完成，重启Pod（如果使用latest标签）
+          kubectl rollout restart deployment/backend-deployment -n default
+          kubectl rollout restart deployment/frontend-deployment -n default
+          kubectl rollout status deployment/backend-deployment -n default
+          kubectl rollout status deployment/frontend-deployment -n default
+
+  integration-test:
+    needs: deploy-to-k8s
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      # 假设你的Postman集合和环境变量文件在仓库中
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run Postman API Tests
+      run: |
+        newman run postman/collection.json -e postman/environment.json
+      # 等待部署完成，稍微sleep一下
+      # 如果你的后端启动慢，可能需要更好的就绪检查而不是sleep
+      # run: sleep 30 && newman run ...
