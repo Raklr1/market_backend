@@ -1,4 +1,4 @@
-package org.weicengbie.config;
+package top.otsuland.market.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,7 +13,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .maxAge(3600)
-                .allowedHeaders("Origin", "Accept", "Content-Type", "Authorization")
-                .allowCredentials(true);
+                .allowedHeaders("Origin", "Accept", "Content-Type", "Authorization");
     }
 }

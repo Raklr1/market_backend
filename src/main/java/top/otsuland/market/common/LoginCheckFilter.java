@@ -36,7 +36,10 @@ public class LoginCheckFilter implements Filter{
 
         String url = req.getRequestURL().toString();
         log.info("请求的 URL: {}", url);
-
+        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+        resp.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Origin,Accept,Content-Type,Authorization");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
         // 判断是否是登录或注册请求
         if(url.contains("login") || url.contains("register") || url.contains("pic")) {
             log.info("login or register, ok!");
@@ -45,7 +48,7 @@ public class LoginCheckFilter implements Filter{
         }
 
         // 判断令牌是否存在
-        String jwt = req.getHeader("token");
+        String jwt = req.getHeader("authorization");
         if(!StringUtils.hasLength(jwt)) {
             log.info("not login, fail!");
 			String notLogin = JSON.toJSONString(Result.set(0, ""));
