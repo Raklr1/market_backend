@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.dto.UserFollowResp;
+import top.otsuland.market.dto.UserLoginResp;
 import top.otsuland.market.dto.UserProfResq;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserProfile;
@@ -68,15 +69,22 @@ public class UserController {
     @PostMapping("/login")
     public Result<?> login(@RequestBody User user) {
         int code = userService.login(user);
-        switch(code) {
-            case 1: 
-                String token = JwtUtils.geneJWT(userService.withId(user));
-                return Result.set(code, "登录成功！", token);
-            case -1: return Result.set(code, "密码为空！");
-            case -2: return Result.set(code, "缺失信息！");
-            case -3: return Result.set(code, "用户不存在！");
-            case -4: return Result.set(code, "密码不正确！");
-            default: return Result.fail();
+        if(code > 0) {
+            String token = JwtUtils.geneJWT(userService.withId(user));
+            UserLoginResp ulr = new UserLoginResp();
+            ulr.setToken(token);
+            ulr.setUid(code);
+            return Result.set(code, "登录成功！", ulr);
+        } else if(code == -1) {
+            return Result.set(code, "密码为空！");
+        } else if(code == -2) {
+            return Result.set(code, "缺失信息！");
+        } else if(code == -3) {
+            return Result.set(code, "用户不存在！");
+        } else if(code == -4) {
+            return Result.set(code, "密码不正确！");
+        } else {
+            return Result.fail();
         }
     }
 

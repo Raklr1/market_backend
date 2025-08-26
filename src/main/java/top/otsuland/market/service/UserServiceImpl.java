@@ -105,7 +105,8 @@ public class UserServiceImpl implements UserService{
             return -4;
         }
         // 登录成功！
-        return 1;
+        Integer uid = u.getId();
+        return uid;
     }
 
     /**
