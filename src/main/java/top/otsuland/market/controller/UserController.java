@@ -15,7 +15,7 @@ import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.dto.UserFollowResp;
 import top.otsuland.market.dto.UserLoginResp;
-import top.otsuland.market.dto.UserProfResq;
+import top.otsuland.market.dto.UserProfResp;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.service.UserService;
@@ -74,7 +74,7 @@ public class UserController {
             UserLoginResp ulr = new UserLoginResp();
             ulr.setToken(token);
             ulr.setUid(code);
-            return Result.set(code, "登录成功！", ulr);
+            return Result.set(1, "登录成功！", ulr);
         } else if(code == -1) {
             return Result.set(code, "密码为空！");
         } else if(code == -2) {
@@ -122,10 +122,11 @@ public class UserController {
         if(uprof == null) {
             return Result.set(0, "获取失败！");
         }
-        UserProfResq upr = new UserProfResq(uprof);
+        UserProfResp upr = new UserProfResp(uprof);
         upr.setUsername(userService.getMeta(uid).getUsername());
         upr.setFollow(userService.getMeta(uid).getFollow());
         upr.setFans(userService.getMeta(uid).getFans());
+        upr.setTel(userService.getMeta(uid).getTel());
         return Result.set(1, "获取成功！", upr);
     }
 
@@ -135,10 +136,11 @@ public class UserController {
         if(uprof == null) {
             return Result.set(0, "获取失败！");
         }
-        UserProfResq upr = new UserProfResq(uprof);
+        UserProfResp upr = new UserProfResp(uprof);
         upr.setUsername(userService.getMeta(uid).getUsername());
         upr.setFollow(userService.getMeta(uid).getFollow());
         upr.setFans(userService.getMeta(uid).getFans());
+        upr.setTel(userService.getMeta(uid).getTel());
         return Result.set(1, "获取成功！", upr);
     }
 

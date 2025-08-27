@@ -17,4 +17,6 @@ public interface ProductPicMapper extends BaseMapper<ProductPic> {
     Integer countSubByPid(Integer pid);
     ProductPic selectByUidAndId(@Param("uid") Integer uid, @Param("id") Integer id);
     int updatePicById(@Param("id") Integer id, @Param("pic") byte[] pic);
+
+    byte[] selectPicById(Integer picId);
 }

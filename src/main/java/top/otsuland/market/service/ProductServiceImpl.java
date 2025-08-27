@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import top.otsuland.market.dto.ProductCreateReq;
+import top.otsuland.market.dto.ProductPicMetaDTO;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.entity.ProductFav;
 import top.otsuland.market.entity.ProductPic;
@@ -253,26 +257,26 @@ public class ProductServiceImpl implements ProductService {
         return ps;
     }
 
-    /**
-     * 获取商品的主图
-     */
     @Override
-    public byte[] getMainPic(Integer pid) {
-        if((pid == null) || (productPicMapper.selectMainByPid(pid) == null)) {
+    public List<ProductPicMetaDTO> getPicsMeta(Integer pid) {
+        if(productMapper.selectById(pid) == null) {
             return null;
         }
-        return productPicMapper.selectMainByPid(pid).getPicture();
+
+        LambdaQueryWrapper<ProductPic> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.select(ProductPic::getId, ProductPic::getKind)
+            .eq(ProductPic::getProductId, pid)
+            .orderByAsc(ProductPic::getId);
+        List<ProductPic> metaList = productPicMapper.selectList(lambdaQueryWrapper);
+        List<ProductPicMetaDTO> result = metaList.stream()
+            .map(pic -> new ProductPicMetaDTO(pic.getId(), pic.getKind()))
+            .collect(Collectors.toList());
+        return result;
     }
 
-    /**
-     * 获取商品的副图
-     */
     @Override
-    public List<ProductPic> getSubPic(Integer pid) {
-        if(pid == null) {
-            return null;
-        }
-        return productPicMapper.selectSubByPid(pid);
+    public byte[] getPic(Integer picId) {
+        return productPicMapper.selectPicById(picId);
     }
 
     /**
