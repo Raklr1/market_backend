@@ -45,8 +45,8 @@
 
     <!-- selectPicById --> 
 
-    <select id="selectPicById">
-        select picture from product_pic where id = #{picId};
+    <select id="selectPicById" resultType="byte[]">
+        select picture from product_pic where id = #{picId} limit 1;
     </select>
 
 </mapper>
