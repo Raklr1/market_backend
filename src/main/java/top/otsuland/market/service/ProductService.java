@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.otsuland.market.dto.ProductCreateReq;
 import top.otsuland.market.dto.ProductPicMetaDTO;
 import top.otsuland.market.entity.Product;
-import top.otsuland.market.entity.ProductPic;
 
 public interface ProductService {
 

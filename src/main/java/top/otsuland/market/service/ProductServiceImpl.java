@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import top.otsuland.market.dto.ProductCreateReq;
@@ -274,9 +273,15 @@ public class ProductServiceImpl implements ProductService {
         return result;
     }
 
+    /**
+     * 获取图片
+     */
     @Override
     public byte[] getPic(Integer picId) {
-        return productPicMapper.selectPicById(picId);
+        ProductPic pp = new LambdaQueryChainWrapper<>(productPicMapper)
+            .eq(ProductPic::getId, picId)
+            .one();
+        return pp.getPicture();
     }
 
     /**
