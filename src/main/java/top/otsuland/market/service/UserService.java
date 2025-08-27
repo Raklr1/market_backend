@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import top.otsuland.market.dto.UserFollowResp;
-import top.otsuland.market.dto.UserMetaResq;
+import top.otsuland.market.dto.UserMetaResp;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserProfile;
 
@@ -18,7 +18,7 @@ public interface UserService {
     int login(User user);
     User withId(User user);
     int meta(Integer id, User user);
-    UserMetaResq getMeta(Integer uid);
+    UserMetaResp getMeta(Integer uid);
     int prof(Integer id, UserProfile userProfile);
     UserProfile getProf(Integer uid);
     int icon(Integer id, MultipartFile pic) throws IOException;

@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 
 import top.otsuland.market.common.PictureUtils;
 import top.otsuland.market.dto.UserFollowResp;
-import top.otsuland.market.dto.UserMetaResq;
+import top.otsuland.market.dto.UserMetaResp;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserFollow;
 import top.otsuland.market.entity.UserPic;
@@ -157,10 +157,10 @@ public class UserServiceImpl implements UserService{
      * 获取基本信息
      */
     @Override
-    public UserMetaResq getMeta(Integer uid) {
+    public UserMetaResp getMeta(Integer uid) {
         User user = userMapper.selectById(uid);
         if(userMapper.selectById(uid) != null) {
-            UserMetaResq umr = new UserMetaResq();
+            UserMetaResp umr = new UserMetaResp();
             umr.setUsername(user.getUsername());
             umr.setTel(user.getTel());
             umr.setFollow(user.getFollow());
@@ -237,7 +237,7 @@ public class UserServiceImpl implements UserService{
     public byte[] getIcon(Integer uid) {
         UserPic upic = userPicMapper.selectByUserId(uid);
         if(upic == null) {
-            return null;
+            return userPicMapper.selectById(0).getPicture();
         }
         return upic.getPicture();
     }

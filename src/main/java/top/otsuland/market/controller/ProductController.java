@@ -192,7 +192,6 @@ public class ProductController {
         return Result.set(1, "获取收藏列表成功！", products);
     }
 
-
     // 获取商品图片 id 列表
     @GetMapping("/pics/{pid}")
     public Result<?> getPicMeta(@PathVariable Integer pid) {
