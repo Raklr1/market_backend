@@ -42,4 +42,11 @@
     <select id="selectSubByPid">
         select * from product_pic where kind = 2 and product_id = #{pid};
     </select>
+
+    <!-- selectPicById --> 
+
+    <select id="selectPicById">
+        select picture from product_pic where id = #{picId};
+    </select>
+
 </mapper>

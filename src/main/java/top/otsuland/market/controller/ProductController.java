@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.dto.PageResult;
 import top.otsuland.market.dto.ProductCreateReq;
+import top.otsuland.market.dto.ProductPicMetaDTO;
 import top.otsuland.market.dto.ProductVO;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.service.ProductService;
@@ -191,12 +192,23 @@ public class ProductController {
         return Result.set(1, "获取收藏列表成功！", products);
     }
 
+
+    // 获取商品图片 id 列表
+    @GetMapping("/pics/{pid}")
+    public Result<?> getPicMeta(@PathVariable Integer pid) {
+        List<ProductPicMetaDTO> data =  productService.getPicsMeta(pid);
+        if(data != null && !data.isEmpty()) {
+            return Result.set(1, "获取成功！", data);
+        }
+        return Result.set(-1, "商品不存在或列表为空！");
+    }
+
     /**
      * 获取商品的主图
      */
-    @GetMapping("pic/main/{pid}")
-    public ResponseEntity<byte[]> getMainPic(@PathVariable Integer pid) {
-        byte[] pic = productService.getMainPic(pid);
+    @GetMapping("/{picId}")
+    public ResponseEntity<byte[]> getPic(@PathVariable Integer picId) {
+        byte[] pic = productService.getPic(picId);
         if(pic == null || pic.length == 0) {
             return ResponseEntity.notFound().build();
         }
@@ -205,15 +217,6 @@ public class ProductController {
         headers.setContentLength(pic.length);
         return new ResponseEntity<>(pic, headers, HttpStatus.OK);
     }
-
-    /**
-     * 获取商品的副图
-     */
-    @GetMapping("/pic/sub/{pid}")
-    public ResponseEntity<?> getSubPic(@PathVariable Integer pid) {
-        return null;
-    }
-
     
     /**
      * 分页获取商品列表

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import top.otsuland.market.dto.ProductCreateReq;
+import top.otsuland.market.dto.ProductPicMetaDTO;
 import top.otsuland.market.entity.Product;
 import top.otsuland.market.entity.ProductPic;
 
@@ -20,11 +21,11 @@ public interface ProductService {
     List<Product> get(Integer uid);
     int edit(Integer uid, Product product);
     int del(Integer uid, Integer pid);
-    // int off(Integer pid);
     int fav(Integer uid, Integer pid);
     int favDel(Integer uid, Integer pid);
     List<Product> favList(Integer uid);
-    byte[] getMainPic(Integer pid);
-    List<ProductPic> getSubPic(Integer pid);
+    List<ProductPicMetaDTO> getPicsMeta(Integer pid);
+    byte[] getPic(Integer picId);
+
     Page<Product> list(Page<Product> pageParam, Integer uid, List<Integer> categoryIds, Integer priceSort, Integer timeSort, String keyword);
 }
