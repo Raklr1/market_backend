@@ -47,12 +47,16 @@ public class ProductController {
         @RequestAttribute("id") Integer uid,
         @RequestBody ProductCreateReq pcr) {
         int code = productService.add(uid, pcr);
-        switch(code) {
-            case 1: return Result.set(code, "上传成功！");
-            case -1: return Result.set(code, "用户不存在！");
-            case -2: return Result.set(code, "信息不完整！");
-            default: return Result.fail();
+        if(code > 0) {
+            return Result.set(1, "上传成功！", code);
+        } else if(code == -1) {
+            return Result.set(code, "用户不存在！");
+        } else if(code == -2) {
+            return Result.set(code, "信息不完整！");
+        } else if(code == -3) {
+            return Result.set(code, "商品名重复！");
         }
+        return Result.set(code, "创建失败！");
     }
 
     /**
@@ -249,4 +253,10 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/detail/{pid}")
+    public Result<?> getProduct(@PathVariable Integer pid) {
+        Product result = productService.getProduct(pid);
+        return Result.set(1, "获取成功！", result);
+    }
+    
 }

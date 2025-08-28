@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -19,4 +20,5 @@ public interface ProductMapper extends BaseMapper<Product> {
     int updateProfById(Integer id, String prof);
     List<Product> selectByIds(List<Integer> ids);
     String selectNameById(Integer id);
+    Product selectByNameAndSellerId(@Param("name") String name, @Param("sellerId") Integer uid);
 }

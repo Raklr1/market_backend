@@ -1,6 +1,7 @@
 package top.otsuland.market.controller;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
+import top.otsuland.market.dto.PageResult;
 import top.otsuland.market.dto.UserFollowResp;
+import top.otsuland.market.dto.UserFollowVO;
+import top.otsuland.market.dto.UserFollowVO2;
 import top.otsuland.market.dto.UserLoginResp;
 import top.otsuland.market.dto.UserProfResp;
 import top.otsuland.market.entity.User;
+import top.otsuland.market.entity.UserFollow;
 import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.service.UserService;
 
@@ -214,24 +221,27 @@ public class UserController {
      * 获取关注列表
      */
     @GetMapping("/follow/{uid}")
-    public Result<?> getfollower(@PathVariable Integer uid) {
-        List<UserFollowResp> ufr = userService.getFollowee(uid);
-        if(ufr == null || ufr.isEmpty()) {
-            return Result.set(0, "未能获取！");
-        }
-        return Result.set(1, "获取成功！", ufr);
+    public Result<?> getfollower(@PathVariable Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<UserFollowVO> pageParam = new Page<>(page, size);
+        Page<UserFollowVO> resultPage = userService.getFolloweePage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
     }
 
     /**
      * 获取粉丝列表
      */
     @GetMapping("/fans/{uid}")
-    public Result<?> getfollowing(@PathVariable Integer uid) {
-        List<UserFollowResp> ufr = userService.getFollower(uid);
-        if(ufr == null || ufr.isEmpty()) {
-            return Result.set(0, "未能获取！");
-        }
-        return Result.set(1, "获取成功！", ufr);
+    public Result<?> getfollowing(@PathVariable Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+
+        Page<UserFollowVO2> pageParam = new Page<>(page, size);
+        Page<UserFollowVO2> resultPage = userService.getFollowerPage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
     }
 
 }

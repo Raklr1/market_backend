@@ -10,4 +10,31 @@
         where followee_id = #{followee} and follower_id = #{follower};
     </select>
 
+    <!-- selectFolloweeWithUsername --> 
+    <resultMap id="userFollowVOMap" type="top.otsuland.market.dto.UserFollowVO">
+        <result property="followeeId" column="followee_id" />
+        <result property="username" column="username" />
+    </resultMap>
+    <select id="selectFolloweeWithUsername" resultMap="userFollowVOMap">
+        select
+            uf.followee_id,
+            u.username
+        from user_follow uf
+        left join a_user u on uf.followee_id = u.id
+        where uf.follower_id = #{uid}
+    </select>
+
+    <!-- selectFollowerWithUsername --> 
+    <resultMap id="userFollowVOMap2" type="top.otsuland.market.dto.UserFollowVO2">
+        <result property="followerId" column="follower_id" />
+        <result property="username" column="username" />
+    </resultMap>
+    <select id="selectFollowerWithUsername" resultMap="userFollowVOMap2">
+        select
+            uf.follower_id,
+            u.username
+        from user_follow uf
+        left join a_user u on uf.follower_id = u.id
+        where uf.followee_id = #{uid}
+    </select>
 </mapper>

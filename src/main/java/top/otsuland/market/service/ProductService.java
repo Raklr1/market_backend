@@ -27,4 +27,5 @@ public interface ProductService {
     byte[] getPic(Integer picId);
 
     Page<Product> list(Page<Product> pageParam, Integer uid, List<Integer> categoryIds, Integer priceSort, Integer timeSort, String keyword);
+    Product getProduct(Integer pid);
 }

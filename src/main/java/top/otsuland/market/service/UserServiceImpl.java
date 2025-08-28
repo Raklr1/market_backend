@@ -9,10 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import top.otsuland.market.common.PictureUtils;
 import top.otsuland.market.dto.UserFollowResp;
+import top.otsuland.market.dto.UserFollowVO;
+import top.otsuland.market.dto.UserFollowVO2;
 import top.otsuland.market.dto.UserMetaResp;
 import top.otsuland.market.entity.User;
 import top.otsuland.market.entity.UserFollow;
@@ -311,9 +315,21 @@ public class UserServiceImpl implements UserService{
         return userMapper.selectFolloweesByUid(uid);
     }
 
+    @Override
+    public Page<UserFollowVO> getFolloweePage(Page<UserFollowVO> pageParam, Integer uid) {
+        Page<UserFollowVO> result = userFollowMapper.selectFolloweeWithUsername(pageParam, uid);
+        return result;
+    }
+
     // 获取粉丝列表
     @Override
     public List<UserFollowResp> getFollower(Integer uid) {
         return userMapper.selectFollowersByUid(uid);
+    }
+
+    @Override
+    public Page<UserFollowVO2> getFollowerPage(Page<UserFollowVO2> pageParam, Integer uid) {
+        Page<UserFollowVO2> result = userFollowMapper.selectFollowerWithUsername(pageParam, uid);
+        return result;
     }
 }

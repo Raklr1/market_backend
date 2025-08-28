@@ -60,6 +60,12 @@ public class ProductServiceImpl implements ProductService {
             pcr.getPrice() == null) {
             return -2;
         }
+        // 商品名重复
+        Product existingProduct = productMapper.selectByNameAndSellerId(pcr.getName(), uid);
+        if(existingProduct != null) {
+            return -3;
+        }
+
         Product product = new Product();
         product.setName(pcr.getName());
         product.setPrice(pcr.getPrice());
@@ -69,8 +75,12 @@ public class ProductServiceImpl implements ProductService {
         product.setSellerName(userMapper.selectUsernameById(uid));
         product.setState(0);
         product.setWant(0);
-        productMapper.insert(product);
-        return 1;
+        int rows = productMapper.insert(product);
+        if(rows > 0) {
+            return productMapper.selectByNameAndSellerId(pcr.getName(), uid).getId();
+        }
+        // 创建失败！
+        return 0;
     }
 
     /**
@@ -328,5 +338,13 @@ public class ProductServiceImpl implements ProductService {
         }
         // 执行分页查询
         return productMapper.selectPage(pageParam, queryWrapper);
+    }
+
+    /**
+     * 获取商品详细信息
+     */
+    @Override
+    public Product getProduct(Integer pid) {
+        return productMapper.selectById(pid);
     }
 }

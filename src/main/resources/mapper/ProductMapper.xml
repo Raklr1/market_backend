@@ -56,4 +56,11 @@
         select name from product
         where id = #{id}
     </select>    
+
+    <!-- selectByNameAndSellerId --> 
+
+    <select id="selectByNameAndSellerId">
+        select * from product
+        where name = #{name} and seller_id = #{sellerId};
+    </select>
 </mapper>
