@@ -65,7 +65,8 @@ public class ProductController {
      */
     @PostMapping("/pic/{kind}/{pid}")
     public Result<?> pic(
-        @PathVariable Integer kind, @RequestAttribute("id") Integer uid, 
+        @RequestAttribute(required = true, value="id") Integer uid, 
+        @PathVariable Integer kind,
         @PathVariable Integer pid, MultipartFile pic) {
         try {
             int code = productService.pic(kind, uid, pid, pic);

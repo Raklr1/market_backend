@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: backend-config
-data:
-  spring.profiles.active: "dev"
-  # 其他Spring配置可以在这里用 application.properties 的格式写
-  # custom.message: "Hello from K8s ConfigMap!"

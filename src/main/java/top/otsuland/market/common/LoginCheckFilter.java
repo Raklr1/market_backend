@@ -37,7 +37,7 @@ public class LoginCheckFilter implements Filter{
         String url = req.getRequestURL().toString();
         log.info("请求的 URL: {}", url);
         // 判断是否是登录或注册请求
-        if(url.contains("login") || url.contains("register") || url.contains("pic")) {
+        if(url.contains("login") || url.contains("register")) {
             log.info("login or register, ok!");
 			chain.doFilter(request, response);
             return;

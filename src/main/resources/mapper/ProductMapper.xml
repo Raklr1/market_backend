@@ -6,7 +6,7 @@
     <!-- selectByUidAndPid --> 
 
     <select id="selectByUidAndPid">
-        select * from product where user_id = #{uid} and id = #{pid};
+        select * from product where seller_id = #{uid} and id = #{pid};
     </select>
 
     <!-- selectByUserId --> 
