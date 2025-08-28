@@ -36,10 +36,6 @@ public class LoginCheckFilter implements Filter{
 
         String url = req.getRequestURL().toString();
         log.info("请求的 URL: {}", url);
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        resp.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-        resp.setHeader("Access-Control-Allow-Headers", "Origin,Accept,Content-Type,Authorization");
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
         // 判断是否是登录或注册请求
         if(url.contains("login") || url.contains("register") || url.contains("pic")) {
             log.info("login or register, ok!");
