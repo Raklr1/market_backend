@@ -12,7 +12,6 @@ import top.otsuland.market.dto.UserFollowVO;
 import top.otsuland.market.dto.UserFollowVO2;
 import top.otsuland.market.dto.UserMetaResp;
 import top.otsuland.market.entity.User;
-import top.otsuland.market.entity.UserFollow;
 import top.otsuland.market.entity.UserProfile;
 
 public interface UserService {

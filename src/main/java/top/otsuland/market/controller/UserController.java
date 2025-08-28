@@ -1,7 +1,6 @@
 package top.otsuland.market.controller;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.otsuland.market.common.JwtUtils;
 import top.otsuland.market.common.Result;
 import top.otsuland.market.dto.PageResult;
-import top.otsuland.market.dto.UserFollowResp;
 import top.otsuland.market.dto.UserFollowVO;
 import top.otsuland.market.dto.UserFollowVO2;
 import top.otsuland.market.dto.UserLoginResp;
 import top.otsuland.market.dto.UserProfResp;
 import top.otsuland.market.entity.User;
-import top.otsuland.market.entity.UserFollow;
 import top.otsuland.market.entity.UserProfile;
 import top.otsuland.market.service.UserService;
 
