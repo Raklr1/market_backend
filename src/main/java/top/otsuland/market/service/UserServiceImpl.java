@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -330,5 +331,17 @@ public class UserServiceImpl implements UserService{
     public Page<UserFollowVO2> getFollowerPage(Page<UserFollowVO2> pageParam, Integer uid) {
         Page<UserFollowVO2> result = userFollowMapper.selectFollowerWithUsername(pageParam, uid);
         return result;
+    }
+
+    // 是否关注
+    @Override
+    public Integer isFollowing(Integer uid, Integer fid) {
+        LambdaQueryWrapper<UserFollow> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(UserFollow::getFollowerId, uid)
+            .eq(UserFollow::getFolloweeId, fid);
+        if(userFollowMapper.selectCount(lqw) == 1) {
+            return 1;
+        }
+        return 0;
     }
 }

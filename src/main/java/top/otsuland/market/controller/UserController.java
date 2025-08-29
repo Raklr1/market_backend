@@ -241,4 +241,15 @@ public class UserController {
         return Result.set(1, "获取成功！", PageResult.of(resultPage));
     }
 
+    /**
+     * 判断是否关注
+     */
+    @GetMapping("/follow/if/{fid}")
+    public Result<?> isFollowing(@RequestAttribute("id") Integer uid, @PathVariable Integer fid) {
+        if(userService.isFollowing(uid, fid) == 1) {
+            return Result.set(1, "已关注");
+        }
+        return Result.set(0, "未关注");
+    }
+
 }

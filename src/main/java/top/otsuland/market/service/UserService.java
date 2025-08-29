@@ -35,4 +35,5 @@ public interface UserService {
     // 获取粉丝列表
     List<UserFollowResp> getFollower(Integer uid);
     Page<UserFollowVO2> getFollowerPage(Page<UserFollowVO2> pageParam, Integer uid);
+    Integer isFollowing(Integer uid, Integer fid);
 }

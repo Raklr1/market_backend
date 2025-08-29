@@ -254,6 +254,9 @@ public class ProductController {
         );
     }
 
+    /**
+     * 获取商品详情
+     */
     @GetMapping("/detail/{pid}")
     public Result<?> getProduct(@PathVariable Integer pid) {
         Product result = productService.getProduct(pid);
