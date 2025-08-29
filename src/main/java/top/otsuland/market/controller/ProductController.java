@@ -137,6 +137,20 @@ public class ProductController {
     }
 
     /**
+     * 获取别人发布的商品列表
+     */
+    @GetMapping("/{uid}")
+    public Result<?> getMethodName(@PathVariable Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<Product> pageParam = new Page<>(page, size);
+        Page<Product> resultPage = productService.getListPage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
+    }
+    
+
+    /**
      * 用户-修改商品
      */
     @PutMapping
@@ -210,6 +224,17 @@ public class ProductController {
         // }
         // return Result.set(1, "获取收藏列表成功！", products);
     }
+
+    @GetMapping("/fav/{uid}")
+    public Result<?> favListOther(@PathVariable Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<Product> pageParam = new Page<>(page, size);
+        Page<Product> resultPage = productService.getFavPage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
+    }
+    
 
     /**
      * 判断是否收藏商品

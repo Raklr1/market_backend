@@ -18,7 +18,7 @@ import top.otsuland.market.mapper.UserMapper;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    
+
     @Autowired
     private UserMapper userMapper;
 
