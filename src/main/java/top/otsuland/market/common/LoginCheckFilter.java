@@ -47,7 +47,7 @@ public class LoginCheckFilter implements Filter{
         String jwt = req.getHeader("authorization");
         if(!StringUtils.hasLength(jwt)) {
             log.info("not login, fail!");
-			String notLogin = JSON.toJSONString(Result.set(0, ""));
+			String notLogin = JSON.toJSONString(Result.set(-10, "missing token"));
             resp.getWriter().write(notLogin);
             return;
         }
@@ -65,7 +65,7 @@ public class LoginCheckFilter implements Filter{
         } catch (Exception e) {
             e.printStackTrace();
             log.info("解析令牌失败，返回未登录错误信息");
-            String notLogin = JSON.toJSONString(Result.error("not_login"));
+            String notLogin = JSON.toJSONString(Result.set(-10, "not_login or error"));
             resp.getWriter().write(notLogin);
             return;
         }
