@@ -5,7 +5,7 @@
 
     <!-- selectByPidAndUid --> 
 
-    <select id="selectByUidAndPid">
+    <select id="selectByUidAndPid" resultType="top.otsuland.market.entity.ProductFav">
         select * from product_fav where uid = #{uid} and pid = #{pid};
     </select>
 

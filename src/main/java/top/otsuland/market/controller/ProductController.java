@@ -116,7 +116,7 @@ public class ProductController {
             default: return Result.fail();
         }
     }
-    
+
     /**
      * 用户-获取自己已发布的商品列表
      */
@@ -139,7 +139,7 @@ public class ProductController {
     /**
      * 获取别人发布的商品列表
      */
-    @GetMapping("/{uid}")
+    @GetMapping("/published/{uid}")
     public Result<?> getMethodName(@PathVariable Integer uid,
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "10") Integer size
@@ -149,7 +149,6 @@ public class ProductController {
         return Result.set(1, "获取成功！", PageResult.of(resultPage));
     }
     
-
     /**
      * 用户-修改商品
      */
@@ -235,7 +234,6 @@ public class ProductController {
         return Result.set(1, "获取成功！", PageResult.of(resultPage));
     }
     
-
     /**
      * 判断是否收藏商品
      */
@@ -247,7 +245,6 @@ public class ProductController {
         return Result.set(0, "未收藏");
     }
     
-
     // 获取商品图片 id 列表
     @GetMapping("/pics/{pid}")
     public Result<?> getPicMeta(@PathVariable Integer pid) {
@@ -313,5 +310,4 @@ public class ProductController {
         Product result = productService.getProduct(pid);
         return Result.set(1, "获取成功！", result);
     }
-    
 }

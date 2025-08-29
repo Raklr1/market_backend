@@ -12,7 +12,8 @@ import top.otsuland.market.entity.ProductFav;
 @Mapper
 public interface ProductFavMapper extends BaseMapper<ProductFav> {
 
-    ProductFav selectByUidAndPid(@Param("pid") Integer pid, @Param("uid") Integer uid);
+    // 别写反了！否则会导致 uid=1 pid=1 的时候能够通过，但是其他事不能的，会迷惑性成功
+    ProductFav selectByUidAndPid(@Param("uid") Integer uid, @Param("pid") Integer pid);
     List<ProductFav> selectByUid(Integer uid);
     List<Integer> selectIdsByUid(Integer uid);
 }
