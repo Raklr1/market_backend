@@ -129,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
         if(order == null) {
             return -1;
         }
-        if(paymentMethod != 1 || paymentMethod != 2) {
+        if(paymentMethod != 1 && paymentMethod != 2) {
             return -1;
         }
         LambdaUpdateWrapper<Order> wrapper = new LambdaUpdateWrapper<>();
