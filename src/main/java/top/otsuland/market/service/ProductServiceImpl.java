@@ -266,6 +266,18 @@ public class ProductServiceImpl implements ProductService {
         return ps;
     }
 
+    // 是否收藏
+    @Override
+    public Integer isFav(Integer uid, Integer pid) {
+        LambdaQueryWrapper<ProductFav> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(ProductFav::getUid, uid)
+            .eq(ProductFav::getPid, pid);
+        if(productFavMapper.selectCount(lqw) == 1) {
+            return 1;
+        }
+        return 0;
+    }
+
     @Override
     public List<ProductPicMetaDTO> getPicsMeta(Integer pid) {
         if(productMapper.selectById(pid) == null) {
@@ -346,5 +358,23 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProduct(Integer pid) {
         return productMapper.selectById(pid);
+    }
+
+    /**
+     * 分页获取已发布的商品
+     */
+    @Override
+    public Page<Product> getListPage(Page<Product> pageParam, Integer uid) {
+        Page<Product> result = productMapper.selectProductByUid(pageParam, uid);
+        return result;
+    }
+
+    /**
+     * 分页获取收藏的商品列表
+     */
+    @Override
+    public Page<Product> getFavPage(Page<Product> pageParam, Integer uid) {
+        Page<Product> result = productMapper.selectFavByUid(pageParam, uid);
+        return result;
     }
 }

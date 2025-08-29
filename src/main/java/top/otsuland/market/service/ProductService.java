@@ -28,4 +28,7 @@ public interface ProductService {
 
     Page<Product> list(Page<Product> pageParam, Integer uid, List<Integer> categoryIds, Integer priceSort, Integer timeSort, String keyword);
     Product getProduct(Integer pid);
+    Page<Product> getListPage(Page<Product> pageParam, Integer uid);
+    Page<Product> getFavPage(Page<Product> pageParam, Integer uid);
+    Integer isFav(Integer uid, Integer pid);
 }

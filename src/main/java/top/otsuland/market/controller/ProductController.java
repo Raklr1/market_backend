@@ -121,12 +121,19 @@ public class ProductController {
      * 用户-获取自己已发布的商品列表
      */
     @GetMapping
-    public Result<?> get(@RequestAttribute("id") Integer uid) {
-        List<Product> products = productService.get(uid);
-        if(products == null) {
-            return Result.set(-1, "暂无商品！");
-        }
-        return Result.set(1, "获取商品成功！", products);
+    public Result<?> get(@RequestAttribute("id") Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<Product> pageParam = new Page<>(page, size);
+        Page<Product> resultPage = productService.getListPage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
+
+        // List<Product> products = productService.get(uid);
+        // if(products == null) {
+        //     return Result.set(-1, "暂无商品！");
+        // }
+        // return Result.set(1, "获取商品成功！", products);
     }
 
     /**
@@ -189,13 +196,32 @@ public class ProductController {
      * 获取收藏列表
      */
     @GetMapping("/fav")
-    public Result<?> favList(@RequestAttribute("id") Integer uid) {
-        List<Product> products = productService.favList(uid);
-        if(products.isEmpty() || products == null) {
-            return Result.set(-1, "收藏列表为空！");
-        }
-        return Result.set(1, "获取收藏列表成功！", products);
+    public Result<?> favList(@RequestAttribute("id") Integer uid,
+        @RequestParam(defaultValue = "1") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<Product> pageParam = new Page<>(page, size);
+        Page<Product> resultPage = productService.getFavPage(pageParam, uid);
+        return Result.set(1, "获取成功！", PageResult.of(resultPage));
+
+        // List<Product> products = productService.favList(uid);
+        // if(products.isEmpty() || products == null) {
+        //     return Result.set(-1, "收藏列表为空！");
+        // }
+        // return Result.set(1, "获取收藏列表成功！", products);
     }
+
+    /**
+     * 判断是否收藏商品
+     */
+    @GetMapping("/fav/if/{pid}")
+    public Result<?> isFav(@RequestAttribute("id") Integer uid, @PathVariable Integer pid) {
+        if(productService.isFav(uid, pid) == 1) {
+            return Result.set(1, "已收藏");
+        }
+        return Result.set(0, "未收藏");
+    }
+    
 
     // 获取商品图片 id 列表
     @GetMapping("/pics/{pid}")

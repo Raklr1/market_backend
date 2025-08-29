@@ -215,7 +215,7 @@ public class UserController {
     }
 
     /**
-     * 获取关注列表
+     * 分页获取关注列表
      */
     @GetMapping("/follow/{uid}")
     public Result<?> getfollower(@PathVariable Integer uid,
@@ -228,7 +228,7 @@ public class UserController {
     }
 
     /**
-     * 获取粉丝列表
+     * 分页获取粉丝列表
      */
     @GetMapping("/fans/{uid}")
     public Result<?> getfollowing(@PathVariable Integer uid,

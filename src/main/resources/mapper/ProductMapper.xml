@@ -63,4 +63,42 @@
         select * from product
         where name = #{name} and seller_id = #{sellerId};
     </select>
+
+    <!-- selectProductByUid --> 
+
+    <select id="selectProductByUid" resultType="top.otsuland.market.entity.Product">
+        select * 
+        from product
+        where seller_id = #{uid}
+    </select>
+
+    <!-- selectFavByUid --> 
+    <resultMap id="productMap" type="top.otsuland.market.entity.Product">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="price" column="price" />
+        <result property="amount" column="amount" />
+        <result property="sellerId" column="seller_id" />
+        <result property="prof" column="prof" />
+        <result property="want" column="want" />
+        <result property="sellerName" column="seller_name" />
+        <result property="createName" column="create_name" />
+        <result property="state" column="state" />
+    </resultMap>
+    <select id="selectFavByUid" resultMap="productMap">
+        select
+            p.id,
+            p.name,
+            p.price,
+            p.amount,
+            p.prof,
+            p.seller_id,
+            p.seller_name,
+            p.want,
+            p.state,
+            p.create_time
+        from product p
+        left join product_fav fav on fav.pid = p.id
+        where fav.uid = #{uid}
+    </select>
 </mapper>
