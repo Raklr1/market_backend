@@ -8,6 +8,8 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson2.JSON;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -61,13 +63,20 @@ public class LoginCheckFilter implements Filter{
             log.info("令牌合法，放行！");
             // 将用户 id 存入 request attribute
             request.setAttribute("id", id);
-            chain.doFilter(request, response);
-        } catch (Exception e) {
+            
+        } catch (JwtException e) {
             e.printStackTrace();
             log.info("解析令牌失败，返回未登录错误信息");
             String notLogin = JSON.toJSONString(Result.set(-10, "not_login or error"));
             resp.getWriter().write(notLogin);
             return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("解析令牌失败，返回未登录错误信息");
+            String notLogin = JSON.toJSONString(Result.set(0, "failed"));
+            resp.getWriter().write(notLogin);
+            return;
         }
+        chain.doFilter(request, response);
     }
 }

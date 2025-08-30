@@ -35,7 +35,7 @@ Thumbs.db
 
 # 环境变量/敏感文件
 .env
-*.properties
+# *.properties
 *.keystore
 *.jks
 /config/application-*.yml
