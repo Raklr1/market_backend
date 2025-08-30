@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson2.JSON;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;

@@ -241,7 +241,11 @@ public class UserServiceImpl implements UserService{
     public byte[] getIcon(Integer uid) {
         UserPic upic = userPicMapper.selectByUserId(uid);
         if(upic == null) {
-            return userPicMapper.selectById(0).getPicture();
+            UserPic up = userPicMapper.selectById(1);
+            if(up == null) {
+                return null;
+            }
+            return up.getPicture();
         }
         return upic.getPicture();
     }
