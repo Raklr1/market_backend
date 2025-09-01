@@ -20,10 +20,10 @@ pipeline {
                     //bat 'minikube image ls'
                     //bat 'kubectl get pods'
                     //bat 'minikube image load market-back:v1'
-                        
-                    }
                     bat 'minikube version'
-                    bat 'minikube status'
+                    bat 'minikube status'    
+                    }
+                    
                 
             }
         }
