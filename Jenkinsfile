@@ -11,7 +11,8 @@ pipeline {
             steps {
                 
                     bat 'mvn install'
-                    bat 'docker build -t market-back:v1 .'
+                    bat 'docker rmi market-back:v1'
+                    
                 
             }
         }
