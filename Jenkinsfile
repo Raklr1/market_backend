@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools{
+        jdk 'JDK-21'
+        maven 'Maven'
+    }
 
     stages {
         stage('后端构建') {
