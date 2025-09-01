@@ -11,11 +11,11 @@ pipeline {
             }
         }
         
-
+    }
     post {
         always {
             echo "后端构建完成"
         }
     }
 }
-}
+
