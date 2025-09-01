@@ -22,6 +22,7 @@ pipeline {
                     //bat 'minikube image load market-back:v1'
                     bat 'minikube version'
                     bat 'minikube update-context'
+                    bat 'echo %KUBECONFIG%'
                     //bat 'minikube start'
                     bat 'minikube status'
                     bat 'minikube image ls'
