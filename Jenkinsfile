@@ -15,6 +15,7 @@ pipeline {
                     //bat 'docker rmi market-back:v1'
                     bat 'docker build -t market-back:v1 .'
                     //bat 'minikube start'
+                    bat 'docke image ls'
                     bat 'minikube image load market-back:v1'
                     bat 'kubectl get pods'
                     //bat 'minikube image load market-back:v1'
