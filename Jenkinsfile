@@ -26,6 +26,7 @@ pipeline {
                     //bat 'minikube start'
                     bat 'minikube status'
                     bat 'minikube image ls'
+                    bat 'kubectl get pods'
                     }
                     
                 
