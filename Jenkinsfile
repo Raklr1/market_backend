@@ -11,6 +11,7 @@ pipeline {
             steps {
                     withKubeConfig([credentialsId: 'k8s1']) {
                     bat 'minikube version'
+                    bat 'minikube status'
                     //bat 'mvn install'
                     //bat 'docker rmi market-back:v1'
                     //bat 'docker build -t market-back:v1 .'
