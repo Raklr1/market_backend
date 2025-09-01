@@ -21,7 +21,9 @@ pipeline {
                     //bat 'kubectl get pods'
                     //bat 'minikube image load market-back:v1'
                     bat 'minikube version'
-                    bat 'minikube status'    
+                    bat 'minikube start'
+                    bat 'minikube status'
+                    bat 'minikube image ls'
                     }
                     
                 
