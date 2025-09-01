@@ -4,6 +4,7 @@ pipeline {
         jdk 'JDK-21'
         maven 'Maven'
         nodejs 'nodejs'
+        docker 'docker'
     }
 
     stages {
